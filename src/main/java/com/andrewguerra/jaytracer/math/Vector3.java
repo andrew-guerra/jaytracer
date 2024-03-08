@@ -1,5 +1,7 @@
 package com.andrewguerra.jaytracer.math;
 
+import com.andrewguerra.jaytracer.render.Color;
+
 public class Vector3 {
     public final double x, y, z;
 
@@ -8,7 +10,9 @@ public class Vector3 {
     public static final Vector3 Y = new Vector3(0, 1, 0);
     public static final Vector3 Z = new Vector3(0, 0, 1);
 
-    public static final double EQUALS_DELTA = 0.001;
+    public static final double EQUALS_DELTA = 0.01;
+    public static final double NUDGE_FACTOR = 0.0001;
+    public static final double MAX_NUDGE_DISTANCE = Math.sqrt(3 * NUDGE_FACTOR * NUDGE_FACTOR);
 
     public Vector3(double x, double y, double z) {
         this.x = x;
@@ -25,7 +29,7 @@ public class Vector3 {
     }
 
     public double distance(Vector3 otherVector) {
-        return otherVector.subtract(otherVector).norm();
+        return this.subtract(otherVector).norm();
     }
 
     public double dot(Vector3 otherVector) {
@@ -56,7 +60,19 @@ public class Vector3 {
         return new Vector3(factor * this.x, factor * this.y, factor * this.z);
     }
 
-    public Vector3 normal() {
+    public Vector3 sqrt() {
+        if(this.x < 0 || this.y < 0 || this.z < 0) {
+            throw new IllegalArgumentException("Cannat take root of negative number");
+        }
+
+        return new Vector3(Math.sqrt(this.x), Math.sqrt(this.y), Math.sqrt(this.z));
+    }
+
+    public Vector3 normalize() {
+        if(this.equals(Vector3.ZERO)) {
+            throw new IllegalArgumentException("Cannot normalize the zero vector");
+        }
+
         double norm = norm();
 
         return new Vector3(this.x / norm, this.y / norm, this.z / norm);
@@ -64,6 +80,18 @@ public class Vector3 {
 
     public Vector3 negate() {
         return new Vector3(-x, -y, -z);
+    }
+
+    public Vector3 nudge() {
+        double newX = this.x + NUDGE_FACTOR * Random.random(-1, 1);
+        double newY = this.y + NUDGE_FACTOR * Random.random(-1, 1);
+        double newZ = this.z + NUDGE_FACTOR * Random.random(-1, 1);
+
+        return new Vector3(newX, newY, newZ);
+    }
+
+    public Color toColor() {
+        return new Color(this.x, this.y, this.z);
     }
 
     @Override
@@ -91,6 +119,38 @@ public class Vector3 {
 
     @Override
     public String toString() {
-        return String.format("(%f, %f, %f)", this.x, this.y, this.z);
+        return String.format("(%.2f, %.2f, %.2f)", this.x, this.y, this.z);
+    }
+
+    public static Vector3 randomVector() {
+        return new Vector3(Random.random(), Random.random(), Random.random());
+    }
+
+    public static Vector3 randomVector(double min, double max) {
+        return new Vector3(Random.random(min, max), Random.random(min, max), Random.random(min, max));
+    }
+
+    public static Vector3 randomHemisphereUnitVector(Vector3 normal) {
+        Vector3 randomVector = randomUnitVector();
+
+        if(normal.dot(randomVector) < 0) {
+            randomVector = randomVector.negate();
+        }
+
+        return randomVector;
+    }
+
+    public static Vector3 randomUnitVector() {
+        return randomUnitSphereVector().normalize();
+    }
+
+    private static Vector3 randomUnitSphereVector() {
+        while(true) {
+            Vector3 randomVector3 = Vector3.randomVector(-1, 1);
+
+            if(randomVector3.dot(randomVector3) <= 1) {
+                return randomVector3;
+            }
+        }
     }
 }
