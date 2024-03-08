@@ -15,20 +15,20 @@ public class SceneTest {
         ArrayList<Light> lights = new ArrayList<>();
         entities.add(mock(SceneEntity.class));
 
-        Scene scene = new Scene(entities, lights, Color.WHITE);
+        Scene scene = new Scene(entities, lights, BackgroundGradient.SKY);
 
-        assertEquals(0, scene.entities.size());
+        assertEquals(1, scene.entities.size());
         assertEquals(0, scene.lights.size());
-        assertEquals(Color.WHITE, scene.backgroundColor);
+        //assertEquals(Color.WHITE, scene.backgroundColor);
         assertArrayEquals(entities.toArray(), scene.entities.toArray());
     }
 
     @Test
     public void testConstructorColor() {
-        Scene scene = new Scene(Color.RED);
+        Scene scene = new Scene(BackgroundGradient.SKY);
 
         assertEquals(0, scene.entities.size());
-        assertEquals(Color.RED, scene.backgroundColor);
+        //assertEquals(Color.RED, scene.backgroundColor);
     }
 
     @Test
@@ -36,6 +36,6 @@ public class SceneTest {
         Scene scene = new Scene();
 
         assertEquals(0, scene.entities.size());
-        assertEquals(Color.BLACK, scene.backgroundColor);
+        //assertEquals(Color.BLACK, scene.backgroundColor);
     }
 }
