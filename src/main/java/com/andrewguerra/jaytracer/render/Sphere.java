@@ -43,7 +43,7 @@ public class Sphere extends SceneEntity {
 
     @Override
     public Ray getSurfaceNormalRay(Vector3 position) {
-        Vector3 normalDirection = position.subtract(this.position).scale(1.0 / this.radius).normal();
+        Vector3 normalDirection = position.subtract(this.position).scale(1.0 / this.radius);
         
         return new Ray(position, normalDirection);
     } 

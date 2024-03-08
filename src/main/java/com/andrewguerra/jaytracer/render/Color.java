@@ -1,5 +1,7 @@
 package com.andrewguerra.jaytracer.render;
 
+import com.andrewguerra.jaytracer.math.Vector3;
+
 public class Color {
     public final double red, green, blue;
 
@@ -22,11 +24,15 @@ public class Color {
         return new Color(this.red + otherColor.red, this.green + otherColor.green, this.blue + otherColor.blue);
     }
 
+    public Color product(Color otherColor) {
+        return new Color(this.red * otherColor.red, this.green * otherColor.green, this.blue * otherColor.blue);
+    }
+
     public Color multiply(double coefficient) {
-        if(coefficient < 0) {
+        /*if(coefficient < 0) {
             throw new IllegalArgumentException("Cannot multiply color by negative coefficient");
-        }
-        
+        }*/
+
         return new Color(coefficient * this.red, coefficient * this.green, coefficient * this.blue);
     }
 
@@ -36,6 +42,10 @@ public class Color {
         int intBlue = ((int) Math.round(255 * this.blue));
 
         return intRed + intGreen + intBlue;
+    }
+
+    public Vector3 toVector() {
+        return new Vector3(this.red, this.green, this.blue);
     }
 
     @Override

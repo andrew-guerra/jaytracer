@@ -22,6 +22,10 @@ public class Ray {
         return new Ray(normal.origin, reflectedDirection);
     }
 
+    public Ray nudge() {
+        return new Ray(this.origin, this.direction.nudge());
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj) {

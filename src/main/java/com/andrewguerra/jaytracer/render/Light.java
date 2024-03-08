@@ -11,7 +11,7 @@ public class Light {
     }
 
     public Ray reverseLightRay(Vector3 position) {
-        return new Ray(position, this.lightDirection(position).normal());
+        return new Ray(position, this.lightDirection(position).normalize());
     }
 
     public double distance(Vector3 position) {

@@ -2,6 +2,7 @@ package com.andrewguerra.jaytracer.math;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -53,12 +54,22 @@ public class RayTest {
     @Test
     public void testReflectNonOrthoginalNormal() {
         Ray incidentRay = new Ray(Vector3.Y, Vector3.Y.negate());
-        Ray normalRay = new Ray(Vector3.ZERO, new Vector3(1, 1, 0).normal());
+        Ray normalRay = new Ray(Vector3.ZERO, new Vector3(1, 1, 0).normalize());
 
         Ray reflectedRay = incidentRay.reflect(normalRay);
 
         assertEquals(Vector3.ZERO, reflectedRay.origin);
         assertEquals(Vector3.X, reflectedRay.direction);
+    }
+
+    @Test 
+    public void testNudge() {
+        for(int i = 0; i < 100; i++) {
+            Ray ray = standardRay.nudge();
+
+            assertEquals(standardRay.origin, ray.origin);
+            assertTrue(standardRay.direction.distance(ray.direction) <= Vector3.MAX_NUDGE_DISTANCE);
+        }
     }
 
     @Test
@@ -95,5 +106,13 @@ public class RayTest {
         Ray ray = new Ray(new Vector3(1, 1, 1), Ray.X.direction);
 
         assertNotEquals(Ray.X, ray);
+    }
+
+    @Test
+    public void testToString() {
+        String expected = "(1.00, 2.00, 3.00):(4.00, 5.00, 6.00)";
+        String actual = standardRay.toString();
+
+        assertEquals(expected, actual);
     }
 }

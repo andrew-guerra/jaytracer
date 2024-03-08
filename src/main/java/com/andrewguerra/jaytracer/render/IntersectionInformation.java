@@ -4,17 +4,17 @@ import com.andrewguerra.jaytracer.math.Ray;
 import com.andrewguerra.jaytracer.math.Vector3;
 
 public class IntersectionInformation {
-    public final SceneEntity entity;
     public final Vector3 intersectionPoint;
-    public final Ray incidentRay;
-    public final double intersectionDistance;
-    public final Camera camera;
+    public final Vector3 normal;
+    public final SceneEntity entity;
+    public final Material material;
+    public final boolean collision;
 
-    public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, Camera camera) {
+    public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, boolean collision) {
         this.entity = entity;
         this.intersectionPoint = incidentRay.cast(intersectionDistance);
-        this.incidentRay = incidentRay;
-        this.intersectionDistance = intersectionDistance;
-        this.camera = camera;
+        this.normal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).origin : null;
+        this.material = entity != null ? entity.material : null;
+        this.collision = collision;
     }
 }

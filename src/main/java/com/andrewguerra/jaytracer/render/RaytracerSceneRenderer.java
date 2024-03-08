@@ -9,16 +9,21 @@ import com.andrewguerra.jaytracer.math.Vector3;
 
 public class RaytracerSceneRenderer extends SceneRenderer {
     private Ray[][] rays;
+    private PixelRenderStack renderStack;
+    private PixelRenderThread[] renderThreads;
     private double viewWindowWidth, viewWindowHeight;
 
     private static final double D = 5;
     private static final double EPSILON = 0.001;
-    private static final int DEPTH_LIMIT = 3;
+    private static final int DEPTH_LIMIT = 10;
+    private static final int TRACE_AMOUNT = 10;
+    private static final int NUM_THREADS = 20;
 
     public RaytracerSceneRenderer(Scene scene, Camera camera, int imageWidth, int imageHeight) {
         super(scene, camera, imageWidth, imageHeight);
 
         this.rays = new Ray[imageHeight][imageWidth];
+        this.renderThreads = new PixelRenderThread[NUM_THREADS];
         this.viewWindowWidth = calculateViewWindowWidth(camera.hfov);
         this.viewWindowHeight = calculateViewWindowHeight(this.viewWindowWidth, this.aspectRatio);
 
@@ -35,8 +40,8 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     }
 
     private void generateRays() {
-        Vector3 u = camera.ray.direction.cross(camera.up).normal();
-        Vector3 v = u.cross(camera.ray.direction).normal();
+        Vector3 u = camera.ray.direction.cross(camera.up).normalize();
+        Vector3 v = u.cross(camera.ray.direction).normalize();
         Vector3 uPrime = u.scale(this.viewWindowWidth / 2);
         Vector3 vPrime = v.scale(this.viewWindowHeight / 2);;
 
@@ -54,7 +59,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
             for(int col = 0; col < this.imageWidth; col++) {
                 fullUDelta = uDelta.scale(col);
-                direction = ul.add(fullUDelta.add(fullVDelta)).subtract(this.camera.ray.origin).normal();
+                direction = ul.add(fullUDelta.add(fullVDelta)).subtract(this.camera.ray.origin).normalize();
 
                 rays[row][col] = new Ray(this.camera.ray.origin, direction);
             }
@@ -70,65 +75,85 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
     private Color[][] castRays() {
         Color[][] pixels = new Color[this.imageHeight][this.imageWidth];
+        this.renderStack = new PixelRenderStack(pixels, this.rays);
 
-        for(int row = 0; row < this.imageHeight; row++) {
-            for(int col = 0; col < this.imageWidth; col++) {
-                pixels[row][col] = this.traceRay(this.rays[row][col]);
-            }
-        }
+        initializeRenderThreads();
+        startRenderThreads();
+        joinRenderThreads();
 
         return pixels;
     }
 
-    protected Color traceRay(Ray ray) {
-        return traceRay(ray, 0);
+    private void initializeRenderThreads() {
+        for(int i = 0; i < NUM_THREADS; i++) {
+            this.renderThreads[i] = new PixelRenderThread(this, renderStack);
+        }
+    }
+
+    private void startRenderThreads() {
+        for(int i = 0; i < NUM_THREADS; i++) {
+            this.renderThreads[i].start();
+        }
+    }
+
+    private void joinRenderThreads() {
+        for(int i = 0; i < NUM_THREADS; i++) {
+            try {
+                this.renderThreads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    protected void castRay(Color[][] pixels, int row, int col) {
+        Vector3 colorAggregate = Color.BLACK.toVector();
+
+        for(int i = 0; i < TRACE_AMOUNT; i++) {
+            colorAggregate = colorAggregate.add(this.traceRay(this.rays[row][col].nudge(), DEPTH_LIMIT).toVector());
+        }
+
+        pixels[row][col] = colorAggregate.scale(1.0 / TRACE_AMOUNT).sqrt().toColor();
     }
 
     protected Color traceRay(Ray ray, int depth) {
-        if(depth == DEPTH_LIMIT) {
-            return Color.BLUE;
+        if(depth <= 0) {
+            return Color.BLACK;
         }
 
+        IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
+
+        if(intersectionInformation.collision) {
+            Vector3 direction = Vector3.randomHemisphereUnitVector(intersectionInformation.normal);
+            System.out.println(intersectionInformation.normal + ":" + direction);
+            Ray diffusedRay = new Ray(intersectionInformation.intersectionPoint, direction);
+
+            return traceRay(diffusedRay, depth - 1).multiply(0.5);
+        } 
+        
+        return this.scene.gradient.getColor(ray);
+    }
+
+    private IntersectionInformation getRayIntersectionInfo(Ray ray) {
         double minDistance = Double.POSITIVE_INFINITY;
         double entityDistance;
         SceneEntity closestEntity = null;
+        boolean collision = false;
 
         for(SceneEntity entity : this.scene.entities) {
             entityDistance = entity.intersectionDistance(ray);
 
-            if(entityDistance < minDistance && entityDistance >= 0) {
+            if(entityDistance < minDistance && entityDistance >= EPSILON) {
                 minDistance = entityDistance;
                 closestEntity = entity;
             }
         }
 
-        if(minDistance == Double.POSITIVE_INFINITY || closestEntity == null) {
-            return scene.backgroundColor;
+        if(minDistance != Double.POSITIVE_INFINITY && closestEntity != null) {
+            collision = true;
         }
 
-        return this.intersectionColor(new IntersectionInformation(closestEntity, ray, minDistance, this.camera), depth);
-    }
-
-    private Color intersectionColor(IntersectionInformation intersectionInformation, int depth) {
-        Ray surfaceNormalRay = intersectionInformation.entity.getSurfaceNormalRay(intersectionInformation.intersectionPoint);  
-
-        if(intersectionInformation.entity.material.isMirror) {
-            Ray reflectedRay = intersectionInformation.incidentRay.reflect(surfaceNormalRay);
-
-            return this.traceRay(reflectedRay, depth + 1);
-        }
-        
-        Color illuminationColor = intersectionInformation.entity.material.ambientColor.multiply(intersectionInformation.entity.material.ambient);
-        for(Light light : this.scene.lights) {
-            Vector3 ligthDirection = light.entity.position.subtract(intersectionInformation.intersectionPoint).normal();//normalize(subtractVectors(lights.at(i)->vector, surfaceIntersectionVector)); 
-            Vector3 h = ligthDirection.average(intersectionInformation.camera.ray.direction); //hVector = normalize(averageVector(ligthDirectionVector, viewDirectionVector));
-            
-            Color diffuseIlluminationColor = intersectionInformation.entity.material.ambientColor.multiply(intersectionInformation.entity.material.diffuse * Math.max(0, surfaceNormalRay.direction.dot(ligthDirection)));//diffuseIlluminationColor = multiplyCoefficient(multiplyCoefficient(colorToVector(diffuseColor), sphere.materialColor->diffuse), std::max(0.0f, dotProduct(surfaceNormal, ligthDirectionVector)));
-            Color specularIlluminationColor = intersectionInformation.entity.material.specularColor.multiply(intersectionInformation.entity.material.specular * Math.pow(Math.max(0, surfaceNormalRay.direction.dot(h)), intersectionInformation.entity.material.specularFalloff));//specularIlluminationColor = multiplyCoefficient(multiplyCoefficient(colorToVector(sphere.materialColor->specularColor), sphere.materialColor->specular), float(pow(std::max(0.0f, dotProduct(surfaceNormal, hVector)), sphere.materialColor->specularFalloff))); 
-            illuminationColor = illuminationColor.add(diffuseIlluminationColor).add(specularIlluminationColor);//illuminationColor = addVectors(illuminationColor, multiplyCoefficient(multiplyCoefficient(multiplyVectors(colorToVector(lights.at(i)->color), addVectors(diffuseIlluminationColor, specularIlluminationColor)), shadowFlag), attentuationFactor));
-        }
-
-        return illuminationColor;
+        return new IntersectionInformation(closestEntity, ray, minDistance, collision);
     }
 
     protected double closestIntersectionDistance(Ray ray) {
@@ -146,29 +171,15 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         return minDistance;
     }
 
-    protected boolean isShadowed(Vector3 position) {
-        for(Light light : this.scene.lights) {
-            double lightDistance = light.distance(position);
-            double closestEntityDistance = closestIntersectionDistance(light.reverseLightRay(position));
-
-            if(closestEntityDistance < lightDistance && closestEntityDistance > EPSILON) {
-                return true;
-            }   
-        }
-
-        return false;
-    }
-
     public static void main(String[] args) {
         ArrayList<SceneEntity> sceneEntities = new ArrayList<>();
-        sceneEntities.add(new Sphere(new Vector3(-4, 0, -3), Material.DEFAULT, 1));
-        sceneEntities.add(new Sphere(new Vector3(4, 0, -3), new Material(Color.GREEN, false), 1));
-        sceneEntities.add(new Sphere(new Vector3(0, 0, -3), new Material(Color.BLUE, true), 1));
+        sceneEntities.add(new Sphere(new Vector3(0, 0, -1), new Material(Color.RED, Color.BLACK, 0), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(Color.BLUE, Color.BLACK, 0), 100));
 
         ArrayList<Light> lights = new ArrayList<>();
         lights.add(new Light(new Sphere(new Vector3(0, 10, 0), Material.DEFAULT, 1)));
 
-        RaytracerSceneRenderer renderer = new RaytracerSceneRenderer(new Scene(sceneEntities, lights, Color.BLACK), Camera.CANONICAL, 1000, 1000);
+        RaytracerSceneRenderer renderer = new RaytracerSceneRenderer(new Scene(sceneEntities, lights, BackgroundGradient.SKY), Camera.CANONICAL, 1000, 1000);
 
         ImageWriter.writeImage(renderer.render(), "sphere.png");
     }
