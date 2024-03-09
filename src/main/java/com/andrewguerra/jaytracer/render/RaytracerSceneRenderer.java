@@ -19,6 +19,13 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     private static final int TRACE_AMOUNT = 10;
     private static final int NUM_THREADS = 20;
 
+    /**
+     * 
+     * @param scene
+     * @param camera
+     * @param imageWidth
+     * @param imageHeight
+     */
     public RaytracerSceneRenderer(Scene scene, Camera camera, int imageWidth, int imageHeight) {
         super(scene, camera, imageWidth, imageHeight);
 
@@ -106,6 +113,12 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         }
     }
 
+    /**
+     * 
+     * @param pixels
+     * @param row
+     * @param col
+     */
     protected void castRay(Color[][] pixels, int row, int col) {
         Vector3 colorAggregate = Color.BLACK.toVector();
 
@@ -116,6 +129,12 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         pixels[row][col] = colorAggregate.scale(1.0 / TRACE_AMOUNT).sqrt().toColor();
     }
 
+    /**
+     * 
+     * @param ray
+     * @param depth
+     * @return
+     */
     protected Color traceRay(Ray ray, int depth) {
         if(depth <= 0) {
             return Color.BLACK;
@@ -156,6 +175,11 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         return new IntersectionInformation(closestEntity, ray, minDistance, collision);
     }
 
+    /**
+     * 
+     * @param ray
+     * @return
+     */
     protected double closestIntersectionDistance(Ray ray) {
         double minDistance = Double.POSITIVE_INFINITY;
         double entityDistance;

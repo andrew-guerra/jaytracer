@@ -7,6 +7,11 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 
 public class ImageWriter {
+    /**
+     * 
+     * @param image
+     * @param filename
+     */
     public static void writeImage(Image image, String filename) {
         BufferedImage bufferedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
 

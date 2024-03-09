@@ -11,6 +11,11 @@ public class PixelRenderStack {
     private Ray[][] rays;
     private final Semaphore semaphore;
 
+    /**
+     * 
+     * @param pixels
+     * @param rays
+     */
     public PixelRenderStack(Color[][] pixels, Ray[][] rays) {
         this.pixels = pixels;
         this.rays = rays;
@@ -20,6 +25,9 @@ public class PixelRenderStack {
         populateRenderStack();
     }
 
+    /**
+     * 
+     */
     private void populateRenderStack() {
         for(int row = 0; row < this.rays.length; row++) {
             for(int col = 0; col < this.rays[0].length; col++) {
@@ -28,6 +36,10 @@ public class PixelRenderStack {
         }
     } 
 
+    /**
+     * 
+     * @return
+     */
     public PixelRender pop() {
         PixelRender pixelRender;
 
@@ -51,6 +63,10 @@ public class PixelRenderStack {
         return pixelRender;
     }
 
+    /**
+     * 
+     * @return
+     */
     public boolean hasRendersLeft() {
         boolean hasRendersLeft;
 

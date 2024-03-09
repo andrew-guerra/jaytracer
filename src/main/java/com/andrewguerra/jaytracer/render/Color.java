@@ -14,20 +14,41 @@ public class Color {
     private static final double MAX = 1.0;
     private static final double MIN = 0.0;
 
+    /**
+     * 
+     * @param red
+     * @param green
+     * @param blue
+     */
     public Color(double red, double green, double blue) {
         this.red = clamp(red);
         this.green = clamp(green);
         this.blue = clamp(blue);
     }
 
+    /**
+     * 
+     * @param otherColor
+     * @return
+     */
     public Color add(Color otherColor) {
         return new Color(this.red + otherColor.red, this.green + otherColor.green, this.blue + otherColor.blue);
     }
 
+    /**
+     * 
+     * @param otherColor
+     * @return
+     */
     public Color product(Color otherColor) {
         return new Color(this.red * otherColor.red, this.green * otherColor.green, this.blue * otherColor.blue);
     }
 
+    /**
+     * 
+     * @param coefficient
+     * @return
+     */
     public Color multiply(double coefficient) {
         /*if(coefficient < 0) {
             throw new IllegalArgumentException("Cannot multiply color by negative coefficient");
@@ -36,6 +57,10 @@ public class Color {
         return new Color(coefficient * this.red, coefficient * this.green, coefficient * this.blue);
     }
 
+    /**
+     * 
+     * @return
+     */
     public int toRGB() {
         int intRed = ((int) Math.round(255 * this.red)) << 16;
         int intGreen = ((int) Math.round(255 * this.green)) << 8;
@@ -44,6 +69,10 @@ public class Color {
         return intRed + intGreen + intBlue;
     }
 
+    /**
+     * 
+     * @return
+     */
     public Vector3 toVector() {
         return new Vector3(this.red, this.green, this.blue);
     }

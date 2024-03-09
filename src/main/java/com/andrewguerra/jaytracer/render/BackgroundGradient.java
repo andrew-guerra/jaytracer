@@ -7,11 +7,21 @@ public class BackgroundGradient {
 
     public static final BackgroundGradient SKY = new BackgroundGradient(new Color(0.5, 0.7, 1.0), Color.WHITE);
 
+    /**
+     * 
+     * @param topColor
+     * @param baseColor
+     */
     public BackgroundGradient(Color topColor, Color baseColor) {
         this.topColor = topColor;
         this.baseColor = baseColor;
     }
 
+    /**
+     * 
+     * @param ray
+     * @return
+     */
     public Color getColor(Ray ray) {
         double a = 0.5 * (ray.direction.y + 1.0);
         return this.baseColor.multiply(1.0-a).add(this.topColor.multiply(a));

@@ -8,6 +8,13 @@ public abstract class SceneRenderer {
     protected int imageWidth, imageHeight;
     protected double aspectRatio;
 
+    /**
+     * 
+     * @param scene
+     * @param camera
+     * @param imageWidth
+     * @param imageHeight
+     */
     public SceneRenderer(Scene scene, Camera camera, int imageWidth, int imageHeight) {
         this.scene = scene;
         this.camera = camera;
@@ -16,5 +23,9 @@ public abstract class SceneRenderer {
         this.aspectRatio = ((double) imageWidth) / imageHeight;
     }
 
+    /**
+     * 
+     * @return
+     */
     public abstract Image render();
 }

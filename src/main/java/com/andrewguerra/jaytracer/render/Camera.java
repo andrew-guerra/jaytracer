@@ -10,6 +10,13 @@ public class Camera {
 
     public static final Camera CANONICAL = new Camera(new Ray(Vector3.ZERO, Vector3.Z.negate()) , Vector3.Y, 120, 90);
 
+    /**
+     * 
+     * @param ray
+     * @param up
+     * @param hfov
+     * @param vfov
+     */
     public Camera(Ray ray, Vector3 up, double hfov, double vfov) {
         this.ray = ray;
         this.up = up;

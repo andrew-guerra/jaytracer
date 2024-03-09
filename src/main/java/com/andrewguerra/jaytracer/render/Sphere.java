@@ -6,12 +6,22 @@ import com.andrewguerra.jaytracer.math.Vector3;
 public class Sphere extends SceneEntity {
     private double radius;
 
+    /**
+     * 
+     * @param position
+     * @param material
+     * @param radius
+     */
     public Sphere(Vector3 position, Material material, double radius) {
         super(position,material);
 
         this.radius = radius;
     }
 
+    /**
+     * 
+     * @param radius
+     */
     public Sphere(double radius) {
         super();
 

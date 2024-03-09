@@ -7,6 +7,10 @@ public class Image {
     private final int height, width;
     private final ImageArea area;
 
+    /**
+     * 
+     * @param pixels
+     */
     public Image(Color[][] pixels) {
         this.pixels = pixels;
         this.height = pixels.length;
@@ -14,6 +18,12 @@ public class Image {
         this.area = new ImageArea(ImageCoordinate.ORIGIN, new ImageCoordinate(this.height, this.width));;
     }
 
+    /**
+     * 
+     * @param height
+     * @param width
+     * @param color
+     */
     public Image(int height, int width, Color color) {
         pixels = new Color[height][width];
         this.height = height;
@@ -27,22 +37,44 @@ public class Image {
         }
     }
 
+    /**
+     * 
+     * @param height
+     * @param width
+     */
     public Image(int height, int width) {
         this(height, width, Color.BLACK);
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * 
+     * @return
+     */
     public int getWidth() {
         return width;
     }
     
+    /**
+     * 
+     * @return
+     */
     public ImageArea getImageArea() {
         return this.area;
     }
 
+    /**
+     * 
+     * @param coordinate
+     * @return
+     */
     public Color getPixel(ImageCoordinate coordinate) {
         if(isIllegalCoordinate(coordinate)) {
             throw new IllegalArgumentException("Coordinate must be in bounds of image");
@@ -51,10 +83,20 @@ public class Image {
         return pixels[coordinate.row][coordinate.col];
     }
 
+    /**
+     * 
+     * @param coordinate
+     * @return
+     */
     private boolean isIllegalCoordinate(ImageCoordinate coordinate) {
         return coordinate.row >= this.height || coordinate.col >= this.width;
     }
 
+    /**
+     * 
+     * @param otherImage
+     * @return
+     */
     public Image add(Image otherImage) {
         if(!this.sharesDimensions(otherImage)) {
             throw new IllegalArgumentException("Images must have same dimensions to add");
@@ -74,6 +116,12 @@ public class Image {
         return this.pixels.length == otherImage.pixels.length && this.pixels[0].length == otherImage.pixels[0].length;
     }
 
+    /**
+     * 
+     * @param targetImage
+     * @param area
+     * @return
+     */
     public boolean containsImage(Image targetImage, ImageArea area) {
         if(!targetImage.area.sharesDimensions(area)) {
             throw new IllegalArgumentException("Subimage area must share dimensions with search area");

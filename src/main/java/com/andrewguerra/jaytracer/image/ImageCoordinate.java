@@ -5,12 +5,22 @@ public class ImageCoordinate {
 
     public static final ImageCoordinate ORIGIN = new ImageCoordinate(0, 0);
 
+    /**
+     * 
+     * @param row
+     * @param col
+     */
     public ImageCoordinate(int row, int col) {
         this.row = row;
         this.col = col;
     }
 
     //manhattan distance
+    /**
+     * 
+     * @param otherCoordinate
+     * @return
+     */
     public int distance(ImageCoordinate otherCoordinate) {
         return Math.abs(this.row - otherCoordinate.row) + Math.abs(this.col - otherCoordinate.col);
     }

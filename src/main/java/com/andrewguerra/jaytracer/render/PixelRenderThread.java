@@ -4,6 +4,11 @@ public class PixelRenderThread extends Thread {
     private RaytracerSceneRenderer renderer;
     private PixelRenderStack renderStack;
 
+    /**
+     * 
+     * @param renderer
+     * @param renderStack
+     */
     public PixelRenderThread(RaytracerSceneRenderer renderer, PixelRenderStack renderStack) {
         this.renderer = renderer;
         this.renderStack = renderStack;

@@ -4,6 +4,11 @@ public class ImageArea {
     public final ImageCoordinate topLeft, topRight, bottomLeft, bottomRight;
     private final int height, width;
 
+    /**
+     * 
+     * @param coord1
+     * @param coord2
+     */
     public ImageArea(ImageCoordinate coord1, ImageCoordinate coord2) {
         int minRow = Math.min(coord1.row, coord2.row);
         int minCol = Math.min(coord1.col, coord2.col);
@@ -19,10 +24,18 @@ public class ImageArea {
         this.width = this.topLeft.distance(this.topRight);
     }
 
+    /**
+     * 
+     * @return
+     */
     public int size() {
         return this.height * this.width;
     }
 
+    /**
+     * 
+     * @return
+     */
     public ImageCoordinate[] coordinates() {
         ImageCoordinate[] coordinates = new ImageCoordinate[this.size()];
 
@@ -36,6 +49,11 @@ public class ImageArea {
         return coordinates;
     }
 
+    /**
+     * 
+     * @param otherArea
+     * @return
+     */
     public boolean sharesDimensions(ImageArea otherArea) {
         return this.height == otherArea.height && this.width == otherArea.width;
     }

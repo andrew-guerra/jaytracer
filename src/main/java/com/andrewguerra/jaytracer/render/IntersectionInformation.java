@@ -10,6 +10,13 @@ public class IntersectionInformation {
     public final Material material;
     public final boolean collision;
 
+    /**
+     * 
+     * @param entity
+     * @param incidentRay
+     * @param intersectionDistance
+     * @param collision
+     */
     public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, boolean collision) {
         this.entity = entity;
         this.intersectionPoint = incidentRay.cast(intersectionDistance);
