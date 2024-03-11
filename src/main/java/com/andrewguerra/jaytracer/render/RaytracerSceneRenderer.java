@@ -7,6 +7,9 @@ import com.andrewguerra.jaytracer.image.ImageWriter;
 import com.andrewguerra.jaytracer.math.Ray;
 import com.andrewguerra.jaytracer.math.Vector3;
 
+/**
+ * A class to represent a scene render using the ray tracing methods to render the scene.
+ */
 public class RaytracerSceneRenderer extends SceneRenderer {
     private Ray[][] rays;
     private PixelRenderStack renderStack;
@@ -19,6 +22,14 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     private static final int TRACE_AMOUNT = 10;
     private static final int NUM_THREADS = 20;
 
+    /**
+     * Constructor with a scene, camera, and image width and height.
+     * 
+     * @param scene the scene to render
+     * @param camera the camera in the scene
+     * @param imageWidth the image height
+     * @param imageHeight the image widht
+     */
     public RaytracerSceneRenderer(Scene scene, Camera camera, int imageWidth, int imageHeight) {
         super(scene, camera, imageWidth, imageHeight);
 
@@ -66,6 +77,9 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         }
     }
 
+    /**
+     * Render the scene via casting rays into the scene with intersectable entities.
+     */
     @Override
     public Image render() {
         Color[][] pixels = castRays();
@@ -106,6 +120,13 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         }
     }
 
+    /**
+     * Cast the ray into the scene, upon the termination of its route, fetch and set the color for its associated pixel.
+     * 
+     * @param pixels the matrix of pixel colors to set
+     * @param row the row of the ray and pixel
+     * @param col the column of the ray and pixel
+     */
     protected void castRay(Color[][] pixels, int row, int col) {
         Vector3 colorAggregate = Color.BLACK.toVector();
 
@@ -116,6 +137,13 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         pixels[row][col] = colorAggregate.scale(1.0 / TRACE_AMOUNT).sqrt().toColor();
     }
 
+    /**
+     * Returns the color of the cast ray along its path.
+     * 
+     * @param ray the ray to get the color of
+     * @param depth the depth of the ray's bounce
+     * @return the color of the cast ray
+     */
     protected Color traceRay(Ray ray, int depth) {
         if(depth <= 0) {
             return Color.BLACK;
@@ -156,6 +184,12 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         return new IntersectionInformation(closestEntity, ray, minDistance, collision);
     }
 
+    /**
+     * The distance of the closest intersection point of the ray to its position.
+     * 
+     * @param ray the ray to cast
+     * @return the distance to the closest intersection point of the ray
+     */
     protected double closestIntersectionDistance(Ray ray) {
         double minDistance = Double.POSITIVE_INFINITY;
         double entityDistance;
