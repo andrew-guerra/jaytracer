@@ -6,11 +6,15 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+/**
+ * Class of utility function to write an Image object to a file
+ */
 public class ImageWriter {
     /**
+     * Writes the image to a file with the given filename
      * 
-     * @param image
-     * @param filename
+     * @param image the image to write
+     * @param filename the file name to write to
      */
     public static void writeImage(Image image, String filename) {
         BufferedImage bufferedImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_RGB);
