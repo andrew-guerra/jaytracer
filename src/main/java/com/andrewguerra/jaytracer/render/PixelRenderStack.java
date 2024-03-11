@@ -5,6 +5,9 @@ import java.util.concurrent.Semaphore;
 
 import com.andrewguerra.jaytracer.math.Ray;
 
+/**
+ * A class to represent a stack of available pixel render jobs. Operations on the stack are thread safe.
+ */
 public class PixelRenderStack {
     private Stack<PixelRender> renderStack;
     private Color[][] pixels;
@@ -12,9 +15,10 @@ public class PixelRenderStack {
     private final Semaphore semaphore;
 
     /**
+     * Constructor for the pixel render stack with pixel matrix and rays array.
      * 
-     * @param pixels
-     * @param rays
+     * @param pixels the matrix of all pixels
+     * @param rays the array of all pixel rays
      */
     public PixelRenderStack(Color[][] pixels, Ray[][] rays) {
         this.pixels = pixels;
@@ -25,9 +29,6 @@ public class PixelRenderStack {
         populateRenderStack();
     }
 
-    /**
-     * 
-     */
     private void populateRenderStack() {
         for(int row = 0; row < this.rays.length; row++) {
             for(int col = 0; col < this.rays[0].length; col++) {
@@ -37,8 +38,9 @@ public class PixelRenderStack {
     } 
 
     /**
+     * Returns and removes the first pixel render on the stack.
      * 
-     * @return
+     * @return the first pixel render on the stack
      */
     public PixelRender pop() {
         PixelRender pixelRender;
@@ -64,8 +66,9 @@ public class PixelRenderStack {
     }
 
     /**
+     * Returns the number of remaining pixel renders on the stack.
      * 
-     * @return
+     * @return the number of remaining pixel renders on the stack
      */
     public boolean hasRendersLeft() {
         boolean hasRendersLeft;

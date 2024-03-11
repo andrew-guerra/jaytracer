@@ -3,14 +3,18 @@ package com.andrewguerra.jaytracer.render;
 import com.andrewguerra.jaytracer.math.Ray;
 import com.andrewguerra.jaytracer.math.Vector3;
 
+/**
+ * A class for a sphere as a scene entity, defined by its radius.
+ */
 public class Sphere extends SceneEntity {
     private double radius;
 
     /**
+     * Constructor with a position, material, and the sphere's radius.
      * 
-     * @param position
-     * @param material
-     * @param radius
+     * @param position the position of the sphere
+     * @param material the material of the sphere
+     * @param radius the radius of the sphere
      */
     public Sphere(Vector3 position, Material material, double radius) {
         super(position,material);
@@ -19,8 +23,9 @@ public class Sphere extends SceneEntity {
     }
 
     /**
+     * Constructor for a standard sphere at the origin and standard material with a given radius
      * 
-     * @param radius
+     * @param radius the radius of the sphere
      */
     public Sphere(double radius) {
         super();
