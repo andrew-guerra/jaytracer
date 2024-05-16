@@ -201,6 +201,16 @@ public class Vector3 {
     }
 
     /**
+     * Returns the vector reflected across the normal. The vector returned will respect 
+     * the direction of the normal.
+     * 
+     * @return The vector reflected across the normal
+     */
+    public Vector3 reflect(Vector3 normal) {
+        return this.subtract(normal.scale(2 * this.dot(normal)));
+    }
+
+    /**
      * Returns the vector whose components are nudged ranomly by NUDGE_FACTOR
      * 
      * @return The vector whose components are nudged randomly by NUDGE_FACTOR
