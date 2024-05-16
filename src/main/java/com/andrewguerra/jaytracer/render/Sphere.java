@@ -35,25 +35,27 @@ public class Sphere extends SceneEntity {
 
     @Override
     public double intersectionDistance(Ray ray) {
-        Vector3 sphereDirection = ray.origin.subtract(this.position);
+        Vector3 sphereDirection = this.position.subtract(ray.origin);
 
         double A = ray.direction.dot(ray.direction);
-        double B = 2 * ray.direction.dot(sphereDirection);
+        double B = -2 * ray.direction.dot(sphereDirection);
         double C = sphereDirection.dot(sphereDirection) - (this.radius * this.radius);
 
         double discriminate = (B * B) - (4 * A * C); 
 
-        if(discriminate <= 0) {
+        if(discriminate < 0) {
             return Double.POSITIVE_INFINITY;
         }
 
         double discriminateSqrt = Math.sqrt(discriminate);
+        double positiveRootDistance = (-B + discriminateSqrt) / (2 * A);
+        double negativeRootDistance = (-B - discriminateSqrt) / (2 * A);
 
-        if(Math.min((-B + discriminateSqrt) / (2 * A), (-B - discriminateSqrt) / (2 * A)) < 0) {
-            return -1;
+        if(Math.max(positiveRootDistance, negativeRootDistance) < 0) {
+            return Double.POSITIVE_INFINITY;
         }
 
-        return Math.min((-B + discriminateSqrt) / (2 * A), (-B - discriminateSqrt) / (2 * A));
+        return Math.min(positiveRootDistance, negativeRootDistance);
     }
 
     @Override

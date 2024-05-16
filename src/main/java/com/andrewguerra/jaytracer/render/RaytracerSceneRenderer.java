@@ -152,8 +152,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
 
         if(intersectionInformation.collision) {
-            Vector3 direction = Vector3.randomHemisphereUnitVector(intersectionInformation.normal);
-            System.out.println(intersectionInformation.normal + ":" + direction);
+            Vector3 direction = intersectionInformation.normal.add(Vector3.randomUnitVector());//Vector3.randomHemisphereUnitVector(intersectionInformation.normal);
             Ray diffusedRay = new Ray(intersectionInformation.intersectionPoint, direction);
 
             return traceRay(diffusedRay, depth - 1).multiply(0.5);

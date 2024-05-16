@@ -299,7 +299,7 @@ public class Vector3 {
         while(true) {
             Vector3 randomVector3 = Vector3.randomVector(-1, 1);
 
-            if(randomVector3.dot(randomVector3) <= 1) {
+            if(randomVector3.dot(randomVector3) <= 1 && !randomVector3.equals(ZERO)) {
                 return randomVector3;
             }
         }
