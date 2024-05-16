@@ -46,7 +46,7 @@ public class IntersectionInformation {
     public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, boolean collision) {
         this.entity = entity;
         this.intersectionPoint = incidentRay.cast(intersectionDistance);
-        this.normal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).origin : null;
+        this.normal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).direction : null;
         this.material = entity != null ? entity.material : null;
         this.collision = collision;
     }
