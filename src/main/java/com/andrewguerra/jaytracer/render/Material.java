@@ -20,6 +20,12 @@ public class Material {
     public final double emission;
 
     /**
+     * The reflectivity of a material on a scale from 0-1. A reflectivity of 1 represents
+     * a purly reflective material. A reflectivity of 0 represents no reflection (a purly diffuse material).
+     */
+    public final double reflectivity;
+
+    /**
      * The default material, a red non emittant material.
      */
     public final static Material DEFAULT = new Material(Color.RED);
@@ -30,11 +36,13 @@ public class Material {
      * @param color the absorbtion color
      * @param emissionColor the emittance color
      * @param emission the emission strength
+     * @param reflectivity the reflectivity
      */
-    public Material(Color color, Color emissionColor, double emission) {
+    public Material(Color color, Color emissionColor, double emission, double reflectivity) {
         this.color = color;
         this.emissionColor = emissionColor;
         this.emission = emission;
+        this.reflectivity = reflectivity;
     }
 
     /**
@@ -43,6 +51,6 @@ public class Material {
      * @param color the absorbtion color
      */
     public Material(Color color) {
-        this(color, Color.WHITE, 0.0);
+        this(color, Color.WHITE, 0.0, 0.0);
     }
 }

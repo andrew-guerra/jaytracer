@@ -19,7 +19,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     private static final double D = 5;
     private static final double EPSILON = 0.001;
     private static final int DEPTH_LIMIT = 10;
-    private static final int TRACE_AMOUNT = 10;
+    private static final int TRACE_AMOUNT = 100;
     private static final int NUM_THREADS = 20;
 
     /**
@@ -152,10 +152,17 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
 
         if(intersectionInformation.collision) {
-            Vector3 direction = intersectionInformation.normal.add(Vector3.randomUnitVector());//Vector3.randomHemisphereUnitVector(intersectionInformation.normal);
+            Vector3 direction;
+            
+            if(intersectionInformation.material.reflectivity > 0) {
+                direction = ray.direction.reflect(intersectionInformation.normal).add(Vector3.randomUnitVector().scale(1 - intersectionInformation.material.reflectivity));
+            } else {
+                direction = intersectionInformation.normal.add(Vector3.randomUnitVector());
+            }
+
             Ray diffusedRay = new Ray(intersectionInformation.intersectionPoint, direction);
 
-            return traceRay(diffusedRay, depth - 1).multiply(0.5);
+            return traceRay(diffusedRay, depth - 1).product(intersectionInformation.material.color);
         } 
         
         return this.scene.gradient.getColor(ray);
@@ -206,8 +213,10 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
     public static void main(String[] args) {
         ArrayList<SceneEntity> sceneEntities = new ArrayList<>();
-        sceneEntities.add(new Sphere(new Vector3(0, 0, -1), new Material(Color.RED, Color.BLACK, 0), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(Color.BLUE, Color.BLACK, 0), 100));
+        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new Material(new Color(0.1, 0.2, 0.5), Color.BLACK, 0, 0), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new Material(new Color(0.8, 0.6, 0.2), Color.BLACK, 0, 0.8), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(new Color(0.8, 0.8, 0.0), Color.BLACK, 0, 0), 100));
 
         ArrayList<Light> lights = new ArrayList<>();
         lights.add(new Light(new Sphere(new Vector3(0, 10, 0), Material.DEFAULT, 1)));
