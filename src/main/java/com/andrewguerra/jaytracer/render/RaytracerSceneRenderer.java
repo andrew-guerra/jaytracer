@@ -15,7 +15,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
     private static final double EPSILON = 0.001;
     private static final int DEPTH_LIMIT = 10;
-    private static final int TRACE_AMOUNT = 100;
+    private static final int TRACE_AMOUNT = 10;
     private static final int NUM_THREADS = 20;
 
     /**
