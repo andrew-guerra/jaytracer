@@ -211,6 +211,20 @@ public class Vector3 {
     }
 
     /**
+     * Returns the refracted vector with respect to the nomal vector. The refractance coefficent
+     * is the ratio of the initial refractance to the the final refractance.
+     * 
+     * @return The vector refracted across the normal
+     */
+    public Vector3 refract(Vector3 normal, double refractanceCoefficent) {
+        double cosTheta = Math.min(this.negate().dot(normal), 1);
+        Vector3 refractPerpendicular = this.add(normal.scale(cosTheta)).scale(refractanceCoefficent);
+        Vector3 refractParallel = normal.scale(-Math.sqrt(Math.abs(1 - refractPerpendicular.dot(refractPerpendicular))));
+
+        return refractPerpendicular.add(refractParallel);
+    }
+
+    /**
      * Returns the vector whose components are nudged ranomly by NUDGE_FACTOR
      * 
      * @return The vector whose components are nudged randomly by NUDGE_FACTOR

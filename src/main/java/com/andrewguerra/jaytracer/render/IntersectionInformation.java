@@ -35,6 +35,11 @@ public class IntersectionInformation {
     public final boolean collision;
 
     /**
+     * If the ray intersects the inside face of a scene entity.
+     */
+    public final boolean internalCollision;
+
+    /**
      * Constructor with a entity, incident ray, intersection distance and
      * if there was a collision.
      * 
@@ -46,8 +51,18 @@ public class IntersectionInformation {
     public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, boolean collision) {
         this.entity = entity;
         this.intersectionPoint = incidentRay.cast(intersectionDistance);
-        this.normal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).direction : null;
         this.material = entity != null ? entity.material : null;
         this.collision = collision;
+
+        Vector3 outwardNormal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).direction : null;
+
+        if(outwardNormal != null) {}
+        this.internalCollision = outwardNormal != null ? incidentRay.direction.dot(outwardNormal) >= 0 : false;
+
+        if(this.internalCollision) {
+            this.normal = outwardNormal != null ? outwardNormal.negate() : null;
+        } else {
+            this.normal = outwardNormal;
+        }
     }
 }
