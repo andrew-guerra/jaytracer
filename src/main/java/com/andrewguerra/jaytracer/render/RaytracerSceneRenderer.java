@@ -1,10 +1,6 @@
 package com.andrewguerra.jaytracer.render;
 
-import java.util.ArrayList;
-
 import com.andrewguerra.jaytracer.image.Image;
-import com.andrewguerra.jaytracer.image.ImageWriter;
-import com.andrewguerra.jaytracer.math.Random;
 import com.andrewguerra.jaytracer.math.Ray;
 import com.andrewguerra.jaytracer.math.Vector3;
 
@@ -17,10 +13,9 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     private PixelRenderThread[] renderThreads;
     private double viewWindowWidth, viewWindowHeight;
 
-    private static final double D = 5;
     private static final double EPSILON = 0.001;
     private static final int DEPTH_LIMIT = 10;
-    private static final int TRACE_AMOUNT = 10;
+    private static final int TRACE_AMOUNT = 300;
     private static final int NUM_THREADS = 20;
 
     /**
@@ -34,17 +29,26 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     public RaytracerSceneRenderer(Scene scene, Camera camera, int imageWidth, int imageHeight) {
         super(scene, camera, imageWidth, imageHeight);
 
-        this.rays = new Ray[imageHeight][imageWidth];
+        this.rays = new Ray[this.imageHeight][this.imageWidth];
         this.renderThreads = new PixelRenderThread[NUM_THREADS];
-        this.viewWindowWidth = calculateViewWindowWidth(camera.hfov);
-        this.viewWindowHeight = calculateViewWindowHeight(this.viewWindowWidth, this.aspectRatio);
+        this.viewWindowWidth = calculateViewWindowWidth(this.camera.hfov);
+        this.viewWindowHeight = this.viewWindowWidth / this.aspectRatio;
 
         this.generateRays();
     }
 
     private double calculateViewWindowWidth(double hfov) {
         double angle = Math.toRadians(hfov) * 0.5;
-	    return 2 * D * Math.tan(angle);
+	    return 2 * this.camera.focalLength * Math.tan(angle);
+    }
+
+    private double calculateViewWindowHeight(double vfov) {
+        double angle = Math.toRadians(vfov) * 0.5;
+	    return 2 * this.camera.focalLength * Math.tan(angle);
+    }
+
+    private double calculateViewWindowWidth(double viewWindowHeight, double aspectRatio) {
+        return viewWindowWidth * aspectRatio;
     }
 
     private double calculateViewWindowHeight(double viewWindowWidth, double aspectRatio) {
@@ -57,7 +61,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         Vector3 uPrime = u.scale(this.viewWindowWidth / 2);
         Vector3 vPrime = v.scale(this.viewWindowHeight / 2);;
 
-        Vector3 viewWindowCenter = camera.ray.cast(D);
+        Vector3 viewWindowCenter = camera.ray.cast(this.camera.focalLength);
         Vector3 ul = viewWindowCenter.add(vPrime.add(uPrime.negate()));
         Vector3 ur = viewWindowCenter.add(vPrime.add(uPrime));
         Vector3 ll = viewWindowCenter.add(vPrime.negate().add(uPrime.negate()));
@@ -153,31 +157,6 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
 
         if(intersectionInformation.collision) {
-            /*Vector3 direction;
-            Color attenuation = intersectionInformation.material.color;
-
-            if(intersectionInformation.material.reflectivity > 0) {
-                direction = ray.direction.reflect(intersectionInformation.normal).add(Vector3.randomUnitVector().scale(1 - intersectionInformation.material.reflectivity));
-            } else {
-                direction = intersectionInformation.normal.add(Vector3.randomUnitVector());
-            }
-
-            if(intersectionInformation.material.refractionIndex != 0) {
-                double refractionCoefficient = intersectionInformation.internalCollision ? intersectionInformation.material.refractionIndex : 1.0 / intersectionInformation.material.refractionIndex;
-                double cosTheta = Math.min(ray.direction.negate().dot(intersectionInformation.normal), 1);
-                double sinTheta = Math.sqrt(1 - cosTheta * cosTheta);
-
-                boolean cannotRefract = refractionCoefficient * sinTheta > 1;
-
-                if(cannotRefract || reflectance(cosTheta, refractionCoefficient) > Random.random()) {
-                    direction = ray.direction.reflect(intersectionInformation.normal);
-                } else {
-                    direction = ray.direction.refract(intersectionInformation.normal, refractionCoefficient);
-                }
-
-                attenuation = Color.WHITE;
-            }*/
-
             if(intersectionInformation.material.scatter(intersectionInformation, ray)) {
                 Ray scatteredRay = intersectionInformation.material.scatteredRay(intersectionInformation, ray);
                 Color attenuation = intersectionInformation.material.attenuation(intersectionInformation, ray);
@@ -232,21 +211,5 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         }
 
         return minDistance;
-    }
-
-    public static void main(String[] args) {
-        ArrayList<SceneEntity> sceneEntities = new ArrayList<>();
-        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new DiffuseMaterial(new Color(0.1, 0.2, 0.5)), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new DielectricMaterial(1.5), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new DielectricMaterial(1 / 1.5), 0.4));
-        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new ReflectiveMaterial(new Color(0.8, 0.6, 0.2), 0.8), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new DiffuseMaterial(new Color(0.8, 0.8, 0.0)), 100));
-
-        ArrayList<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Sphere(new Vector3(0, 10, 0), DiffuseMaterial.RED, 1)));
-
-        RaytracerSceneRenderer renderer = new RaytracerSceneRenderer(new Scene(sceneEntities, lights, BackgroundGradient.SKY), Camera.CANONICAL, 1000, 1000);
-
-        ImageWriter.writeImage(renderer.render(), "sphere.png");
     }
 }

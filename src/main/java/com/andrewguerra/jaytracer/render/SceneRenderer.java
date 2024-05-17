@@ -25,7 +25,7 @@ public abstract class SceneRenderer {
         this.camera = camera;
         this.imageWidth = imageWidth;
         this.imageHeight = imageHeight;
-        this.aspectRatio = ((double) imageWidth) / imageHeight;
+        this.aspectRatio = ((double) this.imageWidth) / this.imageHeight;
     }
 
     /**
