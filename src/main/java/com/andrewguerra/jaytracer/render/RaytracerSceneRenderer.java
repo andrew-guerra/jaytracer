@@ -153,7 +153,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
 
         if(intersectionInformation.collision) {
-            Vector3 direction;
+            /*Vector3 direction;
             Color attenuation = intersectionInformation.material.color;
 
             if(intersectionInformation.material.reflectivity > 0) {
@@ -176,21 +176,19 @@ public class RaytracerSceneRenderer extends SceneRenderer {
                 }
 
                 attenuation = Color.WHITE;
+            }*/
+
+            if(intersectionInformation.material.scatter(intersectionInformation, ray)) {
+                Ray scatteredRay = intersectionInformation.material.scatteredRay(intersectionInformation, ray);
+                Color attenuation = intersectionInformation.material.attenuation(intersectionInformation, ray);
+
+                return traceRay(scatteredRay, depth - 1).product(attenuation);
             }
-
-            Ray diffusedRay = new Ray(intersectionInformation.intersectionPoint, direction);
-
-            return traceRay(diffusedRay, depth - 1).product(attenuation);
+            
+            return Color.BLACK;
         } 
         
         return this.scene.gradient.getColor(ray);
-    }
-
-    private double reflectance(double cosine, double refractionCoefficient) {
-        double r0 = (1 - refractionCoefficient) / (1 + refractionCoefficient);
-        r0 = r0 * r0;
-
-        return r0 + (1 - r0) * Math.pow(1 - cosine, 5);
     }
 
     private IntersectionInformation getRayIntersectionInfo(Ray ray) {
@@ -238,14 +236,14 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
     public static void main(String[] args) {
         ArrayList<SceneEntity> sceneEntities = new ArrayList<>();
-        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new Material(new Color(0.1, 0.2, 0.5), Color.BLACK, 0, 0, 0), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3, 1.5), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3, 1/1.5), 0.4));
-        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new Material(new Color(0.8, 0.6, 0.2), Color.BLACK, 0, 0.8, 0), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(new Color(0.8, 0.8, 0.0), Color.BLACK, 0, 0, 0), 100));
+        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new DiffuseMaterial(new Color(0.1, 0.2, 0.5)), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new DielectricMaterial(1.5), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new DielectricMaterial(1 / 1.5), 0.4));
+        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new ReflectiveMaterial(new Color(0.8, 0.6, 0.2), 0.8), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new DiffuseMaterial(new Color(0.8, 0.8, 0.0)), 100));
 
         ArrayList<Light> lights = new ArrayList<>();
-        lights.add(new Light(new Sphere(new Vector3(0, 10, 0), Material.DEFAULT, 1)));
+        lights.add(new Light(new Sphere(new Vector3(0, 10, 0), DiffuseMaterial.RED, 1)));
 
         RaytracerSceneRenderer renderer = new RaytracerSceneRenderer(new Scene(sceneEntities, lights, BackgroundGradient.SKY), Camera.CANONICAL, 1000, 1000);
 
