@@ -328,4 +328,20 @@ public class Vector3 {
             }
         }
     }
+
+    
+    /**
+     * Returns a random vector inside of the unit disk on the XY plane.
+     * 
+     * @return A random vector inside of the unit disk on the XY plane
+     */
+    public Vector3 randomVectorInUnitDisk() {
+        while(true) {
+            Vector3 vector = new Vector3(Random.random(-1, 1), Random.random(-1, 1), 0);
+
+            if(vector.norm() < 1) {
+                return vector;
+            }
+        }
+    }
 }
