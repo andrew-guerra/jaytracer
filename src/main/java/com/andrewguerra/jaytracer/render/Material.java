@@ -1,63 +1,35 @@
 package com.andrewguerra.jaytracer.render;
 
+import com.andrewguerra.jaytracer.math.Ray;
+
 /**
  * A class to represent material properties for a scene entity.
  */
-public class Material {
+public abstract class Material {
     /**
-     * The color that this material absorbs.
-     */
-    public final Color color;
-
-    /**
-     * The color that this material emmits.
-     */
-    public final Color emissionColor;
-
-    /**
-     * The strength of the emission.
-     */
-    public final double emission;
-
-    /**
-     * The reflectivity of a material on a scale from 0-1. A reflectivity of 1 represents
-     * a purly reflective material. A reflectivity of 0 represents no reflection (a purly diffuse material).
-     */
-    public final double reflectivity;
-
-    /**
-     * The refractivity of the material.
-     */
-    public final double refractionIndex;
-
-    /**
-     * The default material, a red non emittant material.
-     */
-    public final static Material DEFAULT = new Material(Color.RED);
-
-    /**
-     * Constructor with a color, emissionColor, and emission strength.
+     * Returns if the ray for the given intersection will be scattered. If it is not scattered, it is absorbed.
      * 
-     * @param color the absorbtion color
-     * @param emissionColor the emittance color
-     * @param emission the emission strength
-     * @param reflectivity the reflectivity
-     * @param refractivity the refractivity
+     * @param intersectionInformation The information for an intersection with this material
+     * @param incidentRay The incident ray for the intersection
+     * @return If the ray for the given intersection will be scattered
      */
-    public Material(Color color, Color emissionColor, double emission, double reflectivity, double refractionIndex) {
-        this.color = color;
-        this.emissionColor = emissionColor;
-        this.emission = emission;
-        this.reflectivity = reflectivity;
-        this.refractionIndex = refractionIndex;
-    }
+    public abstract boolean scatter(IntersectionInformation intersectionInformation, Ray incidentRay);
 
     /**
-     * Constructor of a non emittant material with a color
+     * Returns the attenuation of the material at a given intersection.
      * 
-     * @param color the absorbtion color
+     * @param intersectionInformation The information for an intersection with this material
+     * @param incidentRay The incident ray for the intersection
+     * @return The attenuation of the material at a given intersection
      */
-    public Material(Color color) {
-        this(color, Color.WHITE, 0.0, 0.0, 0.0);
-    }
+    public abstract Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay);
+
+    /**
+     * Returns the scattered ray of the material at a given intersection.
+     * 
+     * @param intersectionInformation The information for an intersection with this material
+     * @param incidentRay The incident ray for the intersection
+     * @return The scattered ray of the material at a given intersection
+     */
+    public abstract Ray scatteredRay(IntersectionInformation intersectionInformation, Ray incidentRay);
 }

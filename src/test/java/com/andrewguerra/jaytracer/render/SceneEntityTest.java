@@ -25,7 +25,7 @@ public class SceneEntityTest {
 
     @Test
     public void testPositionConstructorVector() {
-        SceneEntity sceneEntity = mock(SceneEntity.class, Mockito.withSettings().useConstructor(Vector3.ZERO, Material.DEFAULT).defaultAnswer(Mockito.CALLS_REAL_METHODS));
+        SceneEntity sceneEntity = mock(SceneEntity.class, Mockito.withSettings().useConstructor(Vector3.ZERO, DiffuseMaterial.RED).defaultAnswer(Mockito.CALLS_REAL_METHODS));
         
         assertEquals(Vector3.ZERO, sceneEntity.getPosition());
     }

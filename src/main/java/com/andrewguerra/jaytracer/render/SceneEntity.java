@@ -35,7 +35,7 @@ public abstract class SceneEntity {
      */
     public SceneEntity() {
         this.position = Vector3.ZERO;
-        this.material = Material.DEFAULT;
+        this.material = DiffuseMaterial.RED;
     }
 
     /**
