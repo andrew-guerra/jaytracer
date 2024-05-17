@@ -26,6 +26,11 @@ public class Material {
     public final double reflectivity;
 
     /**
+     * The refractivity of the material.
+     */
+    public final double refractionIndex;
+
+    /**
      * The default material, a red non emittant material.
      */
     public final static Material DEFAULT = new Material(Color.RED);
@@ -37,12 +42,14 @@ public class Material {
      * @param emissionColor the emittance color
      * @param emission the emission strength
      * @param reflectivity the reflectivity
+     * @param refractivity the refractivity
      */
-    public Material(Color color, Color emissionColor, double emission, double reflectivity) {
+    public Material(Color color, Color emissionColor, double emission, double reflectivity, double refractionIndex) {
         this.color = color;
         this.emissionColor = emissionColor;
         this.emission = emission;
         this.reflectivity = reflectivity;
+        this.refractionIndex = refractionIndex;
     }
 
     /**
@@ -51,6 +58,6 @@ public class Material {
      * @param color the absorbtion color
      */
     public Material(Color color) {
-        this(color, Color.WHITE, 0.0, 0.0);
+        this(color, Color.WHITE, 0.0, 0.0, 0.0);
     }
 }

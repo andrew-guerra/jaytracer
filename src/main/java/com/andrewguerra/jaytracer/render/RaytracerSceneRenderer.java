@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.andrewguerra.jaytracer.image.Image;
 import com.andrewguerra.jaytracer.image.ImageWriter;
+import com.andrewguerra.jaytracer.math.Random;
 import com.andrewguerra.jaytracer.math.Ray;
 import com.andrewguerra.jaytracer.math.Vector3;
 
@@ -19,7 +20,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
     private static final double D = 5;
     private static final double EPSILON = 0.001;
     private static final int DEPTH_LIMIT = 10;
-    private static final int TRACE_AMOUNT = 100;
+    private static final int TRACE_AMOUNT = 10;
     private static final int NUM_THREADS = 20;
 
     /**
@@ -153,19 +154,43 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
         if(intersectionInformation.collision) {
             Vector3 direction;
-            
+            Color attenuation = intersectionInformation.material.color;
+
             if(intersectionInformation.material.reflectivity > 0) {
                 direction = ray.direction.reflect(intersectionInformation.normal).add(Vector3.randomUnitVector().scale(1 - intersectionInformation.material.reflectivity));
             } else {
                 direction = intersectionInformation.normal.add(Vector3.randomUnitVector());
             }
 
+            if(intersectionInformation.material.refractionIndex != 0) {
+                double refractionCoefficient = intersectionInformation.internalCollision ? intersectionInformation.material.refractionIndex : 1.0 / intersectionInformation.material.refractionIndex;
+                double cosTheta = Math.min(ray.direction.negate().dot(intersectionInformation.normal), 1);
+                double sinTheta = Math.sqrt(1 - cosTheta * cosTheta);
+
+                boolean cannotRefract = refractionCoefficient * sinTheta > 1;
+
+                if(cannotRefract || reflectance(cosTheta, refractionCoefficient) > Random.random()) {
+                    direction = ray.direction.reflect(intersectionInformation.normal);
+                } else {
+                    direction = ray.direction.refract(intersectionInformation.normal, refractionCoefficient);
+                }
+
+                attenuation = Color.WHITE;
+            }
+
             Ray diffusedRay = new Ray(intersectionInformation.intersectionPoint, direction);
 
-            return traceRay(diffusedRay, depth - 1).product(intersectionInformation.material.color);
+            return traceRay(diffusedRay, depth - 1).product(attenuation);
         } 
         
         return this.scene.gradient.getColor(ray);
+    }
+
+    private double reflectance(double cosine, double refractionCoefficient) {
+        double r0 = (1 - refractionCoefficient) / (1 + refractionCoefficient);
+        r0 = r0 * r0;
+
+        return r0 + (1 - r0) * Math.pow(1 - cosine, 5);
     }
 
     private IntersectionInformation getRayIntersectionInfo(Ray ray) {
@@ -213,10 +238,11 @@ public class RaytracerSceneRenderer extends SceneRenderer {
 
     public static void main(String[] args) {
         ArrayList<SceneEntity> sceneEntities = new ArrayList<>();
-        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new Material(new Color(0.1, 0.2, 0.5), Color.BLACK, 0, 0), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new Material(new Color(0.8, 0.6, 0.2), Color.BLACK, 0, 0.8), 0.5));
-        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(new Color(0.8, 0.8, 0.0), Color.BLACK, 0, 0), 100));
+        sceneEntities.add(new Sphere(new Vector3(0, 0, -1.2), new Material(new Color(0.1, 0.2, 0.5), Color.BLACK, 0, 0, 0), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3, 1.5), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(-1, 0, -1), new Material(new Color(0.8, 0.8, 0.8), Color.BLACK, 0, 0.3, 1/1.5), 0.4));
+        sceneEntities.add(new Sphere(new Vector3(1, 0, -1), new Material(new Color(0.8, 0.6, 0.2), Color.BLACK, 0, 0.8, 0), 0.5));
+        sceneEntities.add(new Sphere(new Vector3(0, -100.5, -1), new Material(new Color(0.8, 0.8, 0.0), Color.BLACK, 0, 0, 0), 100));
 
         ArrayList<Light> lights = new ArrayList<>();
         lights.add(new Light(new Sphere(new Vector3(0, 10, 0), Material.DEFAULT, 1)));
