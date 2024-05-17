@@ -118,12 +118,4 @@ public class SceneDescriptorParser {
 
         return new BackgroundGradient(topColor, bottomColor);
     }
-
-    public static void main(String[] args) {
-        Scene scene = SceneDescriptorParser.parse("scene.json");
-        
-        RaytracerSceneRenderer render = new RaytracerSceneRenderer(scene, Camera.CANONICAL, 1200, 800);
-        Image image = render.render();
-        ImageWriter.writeImage(image, "test.png");
-    }
 }
