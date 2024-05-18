@@ -11,38 +11,31 @@ public class Scene {
      */
     public final ArrayList<SceneEntity> entities;
 
-    /**
-     * The collection of lights.
-     */
-    public final ArrayList<Light> lights;
 
     /**
      * The background color gradient.
      */
-    public final BackgroundGradient gradient;
+    public final Background background;
     
     /**
-     * Constructor with a collection of scene entities, lights, and a background color gradient.
+     * Constructor with a collection of scene entities, and a background color gradient.
      * 
      * @param entities the collection of scene entities
-     * @param lights the colleciton of lights
-     * @param gradient the background color gradient
+     * @param background The background of the scene
      */
-    public Scene(ArrayList<SceneEntity> entities, ArrayList<Light> lights, BackgroundGradient gradient) {
+    public Scene(ArrayList<SceneEntity> entities, Background background) {
         this.entities = entities;
-        this.lights = lights;
-        this.gradient = gradient;
+        this.background = background;
     }
 
     /**
-     * Constructor with an empty collection of scene entities and lights, with a background color gradient.
+     * Constructor with an empty collection of scene entities and lights, with a background.
      * 
-     * @param gradient the background color gradient
+     * @param background the background 
      */
-    public Scene(BackgroundGradient gradient) {
+    public Scene(Background background) {
         this.entities = new ArrayList<>();
-        this.lights = new ArrayList<>();
-        this.gradient = gradient;
+        this.background = background;
     }
 
     /**
@@ -50,7 +43,6 @@ public class Scene {
      */
     public Scene() {
         this.entities = new ArrayList<>();
-        this.lights = new ArrayList<>();
-        this.gradient = BackgroundGradient.SKY;
+        this.background = BackgroundGradient.SKY;
     }
 }

@@ -32,4 +32,11 @@ public abstract class Material {
      * @return The scattered ray of the material at a given intersection
      */
     public abstract Ray scatteredRay(IntersectionInformation intersectionInformation, Ray incidentRay);
+
+    /**
+     * 
+     */
+    public Color emitted(IntersectionInformation intersectionInformation, Ray incidentRay) {
+        return Color.BLACK;
+    }
 }

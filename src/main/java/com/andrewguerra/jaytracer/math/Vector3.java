@@ -1,6 +1,7 @@
 package com.andrewguerra.jaytracer.math;
 
 import com.andrewguerra.jaytracer.render.Color;
+import com.andrewguerra.jaytracer.render.ColorUnbounded;
 
 /**
  * Class to represent a 3D vector
@@ -246,6 +247,10 @@ public class Vector3 {
         return new Color(this.x, this.y, this.z);
     }
 
+    public ColorUnbounded toColorUnbounded() {
+        return new ColorUnbounded(this.x, this.y, this.z);
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj) {
@@ -329,7 +334,6 @@ public class Vector3 {
         }
     }
 
-    
     /**
      * Returns a random vector inside of the unit disk on the XY plane.
      * 

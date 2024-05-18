@@ -7,12 +7,15 @@ import java.util.Scanner;
 import org.json.*;
 
 import com.andrewguerra.jaytracer.math.Vector3;
+import com.andrewguerra.jaytracer.render.Background;
 import com.andrewguerra.jaytracer.render.BackgroundGradient;
+import com.andrewguerra.jaytracer.render.BackgroundSolid;
 import com.andrewguerra.jaytracer.render.Color;
+import com.andrewguerra.jaytracer.render.ColorUnbounded;
 import com.andrewguerra.jaytracer.render.Cylinder;
 import com.andrewguerra.jaytracer.render.DielectricMaterial;
 import com.andrewguerra.jaytracer.render.DiffuseMaterial;
-import com.andrewguerra.jaytracer.render.Light;
+import com.andrewguerra.jaytracer.render.LightMaterial;
 import com.andrewguerra.jaytracer.render.Material;
 import com.andrewguerra.jaytracer.render.ReflectiveMaterial;
 import com.andrewguerra.jaytracer.render.Scene;
@@ -35,10 +38,9 @@ public class SceneDescriptorParser {
             JSONObject sceneJson = new JSONObject(json);
 
             ArrayList<SceneEntity> sceneEntities = parseSceneEntities(sceneJson.getJSONArray("entities"));
-            ArrayList<Light> lights = new ArrayList<>();
-            BackgroundGradient backgroundGradient = parseBackgroundGradient(sceneJson.getJSONObject("gradient"));
+            Background background = parseBackground(sceneJson.getJSONObject("background"));
 
-            return new Scene(sceneEntities, lights, backgroundGradient);
+            return new Scene(sceneEntities, background);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -110,15 +112,29 @@ public class SceneDescriptorParser {
             double refractionIndex = obj.getDouble("refractionIndex");
             
             return new DielectricMaterial(refractionIndex);
+        } else if(type.equals("light")) {
+            ColorUnbounded color = parseVector3(obj.getString("color")).toColorUnbounded(); 
+
+            return new LightMaterial(color);
         }
 
         return null;
     }
 
-    private static BackgroundGradient parseBackgroundGradient(JSONObject obj) {
-        Color topColor = parseVector3(obj.getString("topColor")).toColor();
-        Color bottomColor = parseVector3(obj.getString("bottomColor")).toColor();
+    private static Background parseBackground(JSONObject obj) {
+        String type = obj.getString("type");
 
-        return new BackgroundGradient(topColor, bottomColor);
+        if(type.equals("solid")) {
+            Color color = parseVector3(obj.getString("color")).toColor();
+
+            return new BackgroundSolid(color);
+        } else if(type.equals("gradient")) {
+            Color topColor = parseVector3(obj.getString("topColor")).toColor();
+            Color bottomColor = parseVector3(obj.getString("bottomColor")).toColor();
+
+            return new BackgroundGradient(topColor, bottomColor);
+        }   
+        
+        return null;
     }
 }
