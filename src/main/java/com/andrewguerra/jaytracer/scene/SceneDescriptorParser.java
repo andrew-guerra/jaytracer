@@ -6,17 +6,14 @@ import java.util.Scanner;
 
 import org.json.*;
 
-import com.andrewguerra.jaytracer.image.Image;
-import com.andrewguerra.jaytracer.image.ImageWriter;
 import com.andrewguerra.jaytracer.math.Vector3;
 import com.andrewguerra.jaytracer.render.BackgroundGradient;
-import com.andrewguerra.jaytracer.render.Camera;
 import com.andrewguerra.jaytracer.render.Color;
+import com.andrewguerra.jaytracer.render.Cylinder;
 import com.andrewguerra.jaytracer.render.DielectricMaterial;
 import com.andrewguerra.jaytracer.render.DiffuseMaterial;
 import com.andrewguerra.jaytracer.render.Light;
 import com.andrewguerra.jaytracer.render.Material;
-import com.andrewguerra.jaytracer.render.RaytracerSceneRenderer;
 import com.andrewguerra.jaytracer.render.ReflectiveMaterial;
 import com.andrewguerra.jaytracer.render.Scene;
 import com.andrewguerra.jaytracer.render.SceneEntity;
@@ -72,6 +69,12 @@ public class SceneDescriptorParser {
             double radius = obj.getDouble("radius");
 
             return new Sphere(position, material, radius);
+        } else if(type.equals("cylinder")) {
+            double radius = obj.getDouble("radius");
+            double height = obj.getDouble("height");
+            Vector3 axis = parseVector3(obj.getString("axis")).normalize();
+
+            return new Cylinder(position, material, axis, radius, height);
         }
 
         return null;
