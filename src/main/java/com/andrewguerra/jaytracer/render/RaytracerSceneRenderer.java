@@ -164,10 +164,10 @@ public class RaytracerSceneRenderer extends SceneRenderer {
                 return traceRay(scatteredRay, depth - 1).product(attenuation);
             }
             
-            return Color.BLACK;
+            return intersectionInformation.material.emitted(intersectionInformation, ray);
         } 
         
-        return this.scene.gradient.getColor(ray);
+        return this.scene.background.getColor(ray);
     }
 
     private IntersectionInformation getRayIntersectionInfo(Ray ray) {

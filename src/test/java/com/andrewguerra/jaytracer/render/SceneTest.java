@@ -12,13 +12,11 @@ public class SceneTest {
     @Test
     public void testConstructorEntitiesColor() {
         ArrayList<SceneEntity> entities = new ArrayList<>();
-        ArrayList<Light> lights = new ArrayList<>();
         //entities.add(mock(SceneEntity.class));
 
-        Scene scene = new Scene(entities, lights, BackgroundGradient.SKY);
+        Scene scene = new Scene(entities, BackgroundGradient.SKY);
 
         //assertEquals(1, scene.entities.size());
-        assertEquals(0, scene.lights.size());
         //assertEquals(Color.WHITE, scene.backgroundColor);
         assertArrayEquals(entities.toArray(), scene.entities.toArray());
     }

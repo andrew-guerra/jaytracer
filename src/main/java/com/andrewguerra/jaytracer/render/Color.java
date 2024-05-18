@@ -9,17 +9,17 @@ public class Color {
     /**
      * The red component.
      */
-    public final double red;
+    public double red;
 
     /**
      * The green component.
      */
-    public final double green;
+    public double green;
 
     /**
      * The blue component.
      */
-    public final double blue;
+    public double blue;
 
     /**
      * The color of pure red.
@@ -60,6 +60,12 @@ public class Color {
         this.red = clamp(red);
         this.green = clamp(green);
         this.blue = clamp(blue);
+    }
+
+    public Color() {
+        this.red = 0;
+        this.green = 0;
+        this.blue = 0;
     }
 
     /**
