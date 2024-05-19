@@ -63,5 +63,19 @@ public class Sphere extends SceneEntity {
         Vector3 normalDirection = position.subtract(this.position).scale(1.0 / this.radius);
         
         return new Ray(position, normalDirection);
+    }
+
+    @Override
+    public double getUCoordinate(Vector3 intersectionPoint, Vector3 normal) {
+        double phi = Math.atan2(-normal.z, normal.x) + Math.PI;
+
+        return phi / (2 * Math.PI);
+    }
+
+    @Override
+    public double getVCoordinate(Vector3 intersectionPoint, Vector3 normal) {
+        double theta = Math.acos(-normal.y);
+
+        return theta / Math.PI;
     } 
 }

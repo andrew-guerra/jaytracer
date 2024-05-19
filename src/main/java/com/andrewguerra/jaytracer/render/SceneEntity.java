@@ -73,4 +73,20 @@ public abstract class SceneEntity {
      * @return the unit surface normal at the given position
      */
     public abstract Ray getSurfaceNormalRay(Vector3 position);
+
+    /**
+     * Returns the U-coordinate at the given position on the entity.
+     * 
+     * @param position The position where to calculate the U-coordiante
+     * @return the U-coordinate at the given position on the entity
+     */
+    public abstract double getUCoordinate(Vector3 intersectionPoint, Vector3 normal);
+
+    /**
+     * Returns the V-coordinate at the given position on the entity.
+     * 
+     * @param position The position where to calculate the V-coordiante
+     * @return the V-coordinate at the given position on the entity
+     */
+    public abstract double getVCoordinate(Vector3 intersectionPoint, Vector3 normal);
 }

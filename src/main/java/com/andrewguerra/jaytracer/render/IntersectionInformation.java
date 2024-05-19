@@ -15,6 +15,11 @@ public class IntersectionInformation {
     public final Vector3 intersectionPoint;
 
     /**
+     * The texture coordinates at the intersection point.
+     */
+    public final double u, v;
+
+    /**
      * The surface normal at the intersection point.
      */
     public final Vector3 normal;
@@ -49,20 +54,27 @@ public class IntersectionInformation {
      * @param collision If an intersection occured
      */
     public IntersectionInformation(SceneEntity entity, Ray incidentRay, double intersectionDistance, boolean collision) {
-        this.entity = entity;
-        this.intersectionPoint = incidentRay.cast(intersectionDistance);
-        this.material = entity != null ? entity.material : null;
-        this.collision = collision;
+        if(collision && entity != null) {
+            this.entity = entity;
+            this.intersectionPoint = incidentRay.cast(intersectionDistance);
+            this.material = entity.material;
+            this.collision = collision;
 
-        Vector3 outwardNormal = entity != null ? entity.getSurfaceNormalRay(intersectionPoint).direction : null;
+            Vector3 outwardNormal = entity.getSurfaceNormalRay(intersectionPoint).direction;
+            this.u = entity.getUCoordinate(intersectionPoint, outwardNormal);
+            this.v = entity.getVCoordinate(intersectionPoint, outwardNormal);
+            this.internalCollision = incidentRay.direction.dot(outwardNormal) >= 0;
 
-        if(outwardNormal != null) {}
-        this.internalCollision = outwardNormal != null ? incidentRay.direction.dot(outwardNormal) >= 0 : false;
-
-        if(this.internalCollision) {
-            this.normal = outwardNormal != null ? outwardNormal.negate() : null;
+            this.normal = this.internalCollision ? outwardNormal.negate() : outwardNormal;
         } else {
-            this.normal = outwardNormal;
+            this.entity = entity;
+            this.intersectionPoint = null;
+            this.u = 0;
+            this.v = 0;
+            this.material = null;
+            this.collision = false;
+            this.internalCollision = false;
+            this.normal = null;
         }
-    }
+    }  
 }

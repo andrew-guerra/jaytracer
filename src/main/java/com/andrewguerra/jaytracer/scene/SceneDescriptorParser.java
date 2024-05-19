@@ -1,11 +1,13 @@
 package com.andrewguerra.jaytracer.scene;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import org.json.*;
 
+import com.andrewguerra.jaytracer.image.Image;
 import com.andrewguerra.jaytracer.math.Vector3;
 import com.andrewguerra.jaytracer.render.Background;
 import com.andrewguerra.jaytracer.render.BackgroundGradient;
@@ -15,12 +17,17 @@ import com.andrewguerra.jaytracer.render.ColorUnbounded;
 import com.andrewguerra.jaytracer.render.Cylinder;
 import com.andrewguerra.jaytracer.render.DielectricMaterial;
 import com.andrewguerra.jaytracer.render.DiffuseMaterial;
+import com.andrewguerra.jaytracer.render.ImageTexture;
 import com.andrewguerra.jaytracer.render.LightMaterial;
 import com.andrewguerra.jaytracer.render.Material;
 import com.andrewguerra.jaytracer.render.ReflectiveMaterial;
 import com.andrewguerra.jaytracer.render.Scene;
 import com.andrewguerra.jaytracer.render.SceneEntity;
+import com.andrewguerra.jaytracer.render.SolidTexture;
 import com.andrewguerra.jaytracer.render.Sphere;
+import com.andrewguerra.jaytracer.render.TestTexture;
+import com.andrewguerra.jaytracer.render.Texture;
+import com.andrewguerra.jaytracer.render.TextureMaterial;
 
 public class SceneDescriptorParser {
     public static Scene parse(String filename) {
@@ -116,6 +123,8 @@ public class SceneDescriptorParser {
             ColorUnbounded color = parseVector3(obj.getString("color")).toColorUnbounded(); 
 
             return new LightMaterial(color);
+        } else if(type.equals("texture")) {
+            return new TextureMaterial(parseTexture(obj.getJSONObject("texture")));
         }
 
         return null;
@@ -134,6 +143,31 @@ public class SceneDescriptorParser {
 
             return new BackgroundGradient(topColor, bottomColor);
         }   
+        
+        return null;
+    }
+
+    private static Texture parseTexture(JSONObject obj) {
+        String type = obj.getString("type");
+
+        if(type.equals("solid")) {
+            Color albedo = parseVector3(obj.getString("albedo")).toColor();
+
+            return new SolidTexture(albedo);
+        } else if(type.equals("test")) {
+            return new TestTexture();
+        } else if(type.equals("image")) {
+            String path = obj.getString("path");
+            Image image;
+
+            try {
+                image = new Image(path);
+                return new ImageTexture(image);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
         
         return null;
     }
