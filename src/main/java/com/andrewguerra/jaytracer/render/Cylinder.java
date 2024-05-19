@@ -48,24 +48,46 @@ public class Cylinder extends SceneEntity {
             return Double.POSITIVE_INFINITY;
         }
 
-        double distance = Math.min(positiveRootDistance, negativeRootDistance);
-        Vector3 intersectionPoint = ray.cast(distance);
+        Vector3 intersectionPointPositiveRoot = ray.cast(positiveRootDistance);
+        Vector3 intersectionPointNegativeRoot = ray.cast(negativeRootDistance);
 
-        double cylinderHeightPosition = intersectionPoint.subtract(this.position).dot(this.axis);
+        double cylinderHeightPositionPositiveRoot = getLevelHeight(intersectionPointPositiveRoot);
+        double cylinderHeightPositionNegativeRoot = getLevelHeight(intersectionPointNegativeRoot);
         
-        if(cylinderHeightPosition > this.height) {
+        boolean intersectionPointPositiveRootInBounds = cylinderHeightPositionPositiveRoot > this.height || cylinderHeightPositionPositiveRoot < 0;
+        boolean intersectionPointNegativeRootInBounds = cylinderHeightPositionNegativeRoot > this.height || cylinderHeightPositionNegativeRoot < 0;
+
+        if(intersectionPointPositiveRootInBounds && intersectionPointNegativeRootInBounds) {
             return Double.POSITIVE_INFINITY;
         }
 
-        return distance;
+        if(!intersectionPointNegativeRootInBounds) {
+            return positiveRootDistance;
+        }
+
+        return negativeRootDistance;
     }
 
     @Override
     public Ray getSurfaceNormalRay(Vector3 position) {
-        double cylinderHeightPosition = position.subtract(this.position).dot(this.axis);
+        double cylinderHeightPosition = getLevelHeight(position);
         Vector3 levelPosition = this.ray.cast(cylinderHeightPosition);
 
         return new Ray(position, position.subtract(levelPosition).normalize());
+    }
+
+    private double getLevelHeight(Vector3 position) {
+        return position.subtract(this.position).dot(this.axis);
+    }
+
+    @Override
+    public double getUCoordinate(Vector3 intersectionPoint, Vector3 normal) {
+        return 0;
+    }
+
+    @Override
+    public double getVCoordinate(Vector3 intersectionPoint, Vector3 normal) {
+        return getLevelHeight(intersectionPoint) / this.height;
     }
     
 }

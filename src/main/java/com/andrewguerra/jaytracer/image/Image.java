@@ -1,5 +1,11 @@
 package com.andrewguerra.jaytracer.image;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import com.andrewguerra.jaytracer.render.Color;
 
 /**
@@ -23,6 +29,31 @@ public class Image {
     }
 
     /**
+     * Constructor for an image defined at the given filepath
+     * 
+     * @param filepath The filepath to an image file
+     */
+    public Image(String filepath) throws IOException {
+        BufferedImage image = ImageIO.read(new File(filepath));
+        this.height = image.getHeight();
+        this.width = image.getWidth();
+        this.area = new ImageArea(ImageCoordinate.ORIGIN, new ImageCoordinate(this.height, this.width));
+        pixels = new Color[this.height][this.width];
+
+        int red, green, blue, rgb;
+        for(int row = 0; row < this.height; row++) {
+            for(int col = 0; col < this.width; col++) {
+                rgb = image.getRGB(col, row);
+                red = ((rgb >> 16) & 0xff);
+                green = (rgb >> 8) & 0xff;
+                blue = rgb & 0xff;
+
+                this.pixels[row][col] = new Color(red / 255.0, green /255.0, blue / 255.0);
+            }
+        }
+    }
+
+    /**
      * Constructor for an image with a width and height with all the pixels having a shared color.
      * 
      * @param height The height of the image
@@ -30,7 +61,7 @@ public class Image {
      * @param color The color of the image pixels
      */
     public Image(int height, int width, Color color) {
-        pixels = new Color[height][width];
+        this.pixels = new Color[height][width];
         this.height = height;
         this.width = width;
         this.area = new ImageArea(ImageCoordinate.ORIGIN, new ImageCoordinate(this.height, this.width));

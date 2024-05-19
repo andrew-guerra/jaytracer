@@ -20,6 +20,10 @@ public class DiffuseMaterial extends Material{
         this.albedo = albedo;
     }
 
+    public DiffuseMaterial() {
+        this.albedo = Color.BLACK;
+    }
+
     @Override
     public boolean scatter(IntersectionInformation intersectionInformation, Ray incidentRay) {
         return true;
