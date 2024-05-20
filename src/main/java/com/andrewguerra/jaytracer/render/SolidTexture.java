@@ -3,14 +3,14 @@ package com.andrewguerra.jaytracer.render;
 import com.andrewguerra.jaytracer.math.Vector3;
 
 public class SolidTexture extends Texture {
-    private Color albedo;
+    private ColorUnbounded albedo;
 
-    public SolidTexture(Color albedo) {
+    public SolidTexture(ColorUnbounded albedo) {
         this.albedo = albedo;
     }
 
     @Override
-    public Color value(double u, double v, Vector3 point) {
+    public ColorUnbounded value(double u, double v, Vector3 point) {
         return this.albedo;
     }
 }

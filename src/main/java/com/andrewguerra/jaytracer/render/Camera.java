@@ -65,7 +65,7 @@ public class Camera {
      * @param vfov The vertical field of view in radians
      */
     public Camera(Vector3 position, Vector3 focusPoint, Vector3 up, double hfov, double vfov) {
-        Vector3 direction = focusPoint.subtract(position);
+        Vector3 direction = focusPoint.subtract(position).normalize();
 
         this.ray = new Ray(position, direction);
         this.up = up;

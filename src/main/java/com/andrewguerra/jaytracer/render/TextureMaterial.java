@@ -15,7 +15,7 @@ public class TextureMaterial extends DiffuseMaterial {
     }
 
     @Override
-    public Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
+    public ColorUnbounded attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
         return texture.value(intersectionInformation.u, intersectionInformation.v, intersectionInformation.intersectionPoint);
     }
 

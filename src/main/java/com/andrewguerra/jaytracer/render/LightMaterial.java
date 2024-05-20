@@ -15,7 +15,7 @@ public class LightMaterial extends Material {
     }
 
     @Override
-    public Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
+    public ColorUnbounded attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
        return this.color;
     }
 
@@ -25,7 +25,7 @@ public class LightMaterial extends Material {
     }
     
     @Override
-    public Color emitted(IntersectionInformation intersectionInformation, Ray incidentRay) {
+    public ColorUnbounded emitted(IntersectionInformation intersectionInformation, Ray incidentRay) {
         return this.color;
     }
 }

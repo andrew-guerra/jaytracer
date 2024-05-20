@@ -12,6 +12,8 @@ import com.andrewguerra.jaytracer.math.Vector3;
 import com.andrewguerra.jaytracer.render.Background;
 import com.andrewguerra.jaytracer.render.BackgroundGradient;
 import com.andrewguerra.jaytracer.render.BackgroundSolid;
+import com.andrewguerra.jaytracer.render.Box;
+import com.andrewguerra.jaytracer.render.Camera;
 import com.andrewguerra.jaytracer.render.Color;
 import com.andrewguerra.jaytracer.render.ColorUnbounded;
 import com.andrewguerra.jaytracer.render.Cylinder;
@@ -20,6 +22,7 @@ import com.andrewguerra.jaytracer.render.DiffuseMaterial;
 import com.andrewguerra.jaytracer.render.ImageTexture;
 import com.andrewguerra.jaytracer.render.LightMaterial;
 import com.andrewguerra.jaytracer.render.Material;
+import com.andrewguerra.jaytracer.render.Quad;
 import com.andrewguerra.jaytracer.render.ReflectiveMaterial;
 import com.andrewguerra.jaytracer.render.Scene;
 import com.andrewguerra.jaytracer.render.SceneEntity;
@@ -71,7 +74,7 @@ public class SceneDescriptorParser {
 
     private static SceneEntity parseSceneEntity(JSONObject obj) {
         String type = obj.getString("type");
-        Vector3 position = parseVector3(obj.getString("position"));
+        Vector3 position = parseVector3(obj.optString("position", "0, 0, 0"));
         Material material = parseMaterial(obj.getJSONObject("material"));
 
         if(type.equals("sphere")) {
@@ -84,6 +87,16 @@ public class SceneDescriptorParser {
             Vector3 axis = parseVector3(obj.getString("axis")).normalize();
 
             return new Cylinder(position, material, axis, radius, height);
+        } else if(type.equals("quad")) {
+            Vector3 u = parseVector3(obj.getString("u"));
+            Vector3 v = parseVector3(obj.getString("v"));
+
+            return new Quad(position, material, u, v);
+        } else if(type.equals("box")) {
+            Vector3 point1 = parseVector3(obj.getString("point1"));
+            Vector3 point2 = parseVector3(obj.getString("point2"));
+
+            return new Box(point1, point2, material);
         }
 
         return null;
@@ -107,11 +120,11 @@ public class SceneDescriptorParser {
         String type = obj.getString("type");
 
         if(type.equals("diffuse")) {
-            Color albedo = parseVector3(obj.getString("albedo")).toColor();
-
+            ColorUnbounded albedo = parseVector3(obj.getString("albedo")).toColorUnbounded();
+            
             return new DiffuseMaterial(albedo);
         } else if(type.equals("reflective")) {
-            Color albedo = parseVector3(obj.getString("albedo")).toColor();
+            ColorUnbounded albedo = parseVector3(obj.getString("albedo")).toColorUnbounded();
             double reflectivity = obj.getDouble("reflectivity");
 
             return new ReflectiveMaterial(albedo, reflectivity);
@@ -134,12 +147,12 @@ public class SceneDescriptorParser {
         String type = obj.getString("type");
 
         if(type.equals("solid")) {
-            Color color = parseVector3(obj.getString("color")).toColor();
+            ColorUnbounded color = parseVector3(obj.getString("color")).toColorUnbounded();
 
             return new BackgroundSolid(color);
         } else if(type.equals("gradient")) {
-            Color topColor = parseVector3(obj.getString("topColor")).toColor();
-            Color bottomColor = parseVector3(obj.getString("bottomColor")).toColor();
+            ColorUnbounded topColor = parseVector3(obj.getString("topColor")).toColorUnbounded();
+            ColorUnbounded bottomColor = parseVector3(obj.getString("bottomColor")).toColorUnbounded();
 
             return new BackgroundGradient(topColor, bottomColor);
         }   
@@ -151,7 +164,7 @@ public class SceneDescriptorParser {
         String type = obj.getString("type");
 
         if(type.equals("solid")) {
-            Color albedo = parseVector3(obj.getString("albedo")).toColor();
+            ColorUnbounded albedo = parseVector3(obj.getString("albedo")).toColorUnbounded();
 
             return new SolidTexture(albedo);
         } else if(type.equals("test")) {

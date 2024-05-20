@@ -1,0 +1,96 @@
+{
+    "entities": [
+        {
+            "type": "quad",
+            "position": "555, 0, 0",
+            "v": "0, 555, 0",
+            "u": "0, 0, 555",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.12, 0.45, 0.15"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "0, 0, 0",
+            "u": "0, 555, 0",
+            "v": "0, 0, 555",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.65, 0.05, 0.05"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "0, 555, 0",
+            "u": "555, 0, 0",
+            "v": "0, 0, 555",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "0, 0, 0",
+            "v": "555, 0, 0",
+            "u": "0, 0, 555",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "0, 0, 555",
+            "v": "555, 0, 0",
+            "u": "0, 555, 0",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "0, 0, 0",
+            "v": "0, 555, 0",
+            "u": "555, 0, 0",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        },
+        {
+            "type": "quad",
+            "position": "343, 554, 332",
+            "u": "-130, 0, 0",
+            "v": "0, 0, -105",
+            "material": {
+                "type": "light",
+                "color": "15, 15, 15"
+            }
+        },
+        {
+            "type": "box",
+            "point1": "130, 0, 65",
+            "point2": "295, 165, 230",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        },
+        {
+            "type": "box",
+            "point1": "265, 0, 295",
+            "point2": "430, 330, 460",
+            "material": {
+                "type": "diffuse",
+                "albedo": "0.73, 0.73, 0.73"
+            }
+        }
+    ],
+    "background": {
+        "type": "solid",
+        "color": "0, 0, 0"
+    }
+}
