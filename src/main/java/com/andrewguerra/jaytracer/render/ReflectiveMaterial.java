@@ -10,7 +10,7 @@ public class ReflectiveMaterial extends Material {
     /**
      * The albedo for the surface material
      */
-    public final Color albedo;
+    public final ColorUnbounded albedo;
 
     /**
      * The reflectivity of the material on a scale of 0 to 1. A value of 1 represents 
@@ -18,9 +18,9 @@ public class ReflectiveMaterial extends Material {
      */
     public final double reflectivity;
 
-    public static final ReflectiveMaterial MIRROR = new ReflectiveMaterial(Color.WHITE, 1);
+    public static final ReflectiveMaterial MIRROR = new ReflectiveMaterial(ColorUnbounded.WHITE, 1);
 
-    public ReflectiveMaterial(Color albedo, double reflectivity) {
+    public ReflectiveMaterial(ColorUnbounded albedo, double reflectivity) {
         this.albedo = albedo;
         this.reflectivity = reflectivity;
     }
@@ -31,7 +31,7 @@ public class ReflectiveMaterial extends Material {
     }
 
     @Override
-    public Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
+    public ColorUnbounded attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
         return this.albedo;
     }
 

@@ -12,7 +12,7 @@ public class ImageTexture extends Texture {
     }
 
     @Override
-    public Color value(double u, double v, Vector3 point) {
+    public ColorUnbounded value(double u, double v, Vector3 point) {
         double uImage = u;
         double vImage = 1 - v;
 
@@ -20,6 +20,6 @@ public class ImageTexture extends Texture {
         int col = (int) Math.round(uImage * (image.getWidth() - 1));
         ImageCoordinate coordinate = new ImageCoordinate(row, col);
 
-        return image.getPixel(coordinate);
+        return new ColorUnbounded(image.getPixel(coordinate));
     }
 }

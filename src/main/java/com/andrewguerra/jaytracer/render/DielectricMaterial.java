@@ -26,8 +26,8 @@ public class DielectricMaterial extends Material {
     }
 
     @Override
-    public Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
-        return Color.WHITE;
+    public ColorUnbounded attenuation(IntersectionInformation intersectionInformation, Ray incidentRay) {
+        return ColorUnbounded.WHITE;
     }
 
     @Override

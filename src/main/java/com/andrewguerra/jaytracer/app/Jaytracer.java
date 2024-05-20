@@ -2,6 +2,7 @@ package com.andrewguerra.jaytracer.app;
 
 import com.andrewguerra.jaytracer.image.Image;
 import com.andrewguerra.jaytracer.image.ImageWriter;
+import com.andrewguerra.jaytracer.math.Vector3;
 import com.andrewguerra.jaytracer.render.Camera;
 import com.andrewguerra.jaytracer.render.RaytracerSceneRenderer;
 import com.andrewguerra.jaytracer.render.Scene;
@@ -20,7 +21,8 @@ public class Jaytracer {
         int imageHeight = Integer.parseInt(args[3]);
 
         Scene scene = SceneDescriptorParser.parse(sceneDescriptorFileName);
-        RaytracerSceneRenderer render = new RaytracerSceneRenderer(scene, Camera.CANONICAL, imageWidth, imageHeight);
+        Camera camera = Camera.CANONICAL;//new Camera(new Vector3(278, 278, -800), new Vector3(278, 278, 0), Vector3.Y, 40, 40);
+        RaytracerSceneRenderer render = new RaytracerSceneRenderer(scene, camera, imageWidth, imageHeight);
         Image image = render.render();
 
         ImageWriter.writeImage(image, imageFileName);

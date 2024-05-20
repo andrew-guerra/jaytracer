@@ -3,5 +3,5 @@ package com.andrewguerra.jaytracer.render;
 import com.andrewguerra.jaytracer.math.Ray;
 
 public abstract class Background {
-    public abstract Color getColor(Ray ray); 
+    public abstract ColorUnbounded getColor(Ray ray); 
 }

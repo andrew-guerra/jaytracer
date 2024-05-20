@@ -67,7 +67,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         Vector3 ll = viewWindowCenter.add(vPrime.negate().add(uPrime.negate()));
 
         Vector3 uDelta = ur.subtract(ul).scale(1.0 / (this.imageWidth - 1));
-        Vector3 vDelta = ll.subtract(ul).scale(1.0 / (this.imageWidth - 1));
+        Vector3 vDelta = ll.subtract(ul).scale(1.0 / (this.imageHeight - 1));
 
         Vector3 fullUDelta, fullVDelta, direction;
         for(int row = 0; row < this.imageHeight; row++) {
@@ -136,7 +136,7 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         Vector3 colorAggregate = Color.BLACK.toVector();
 
         for(int i = 0; i < TRACE_AMOUNT; i++) {
-            colorAggregate = colorAggregate.add(this.traceRay(this.rays[row][col].nudge(), DEPTH_LIMIT).toVector());
+            colorAggregate = colorAggregate.add(this.traceRay(this.rays[row][col], DEPTH_LIMIT).toVector());
         }
 
         pixels[row][col] = colorAggregate.scale(1.0 / TRACE_AMOUNT).sqrt().toColor();
@@ -149,9 +149,9 @@ public class RaytracerSceneRenderer extends SceneRenderer {
      * @param depth the depth of the ray's bounce
      * @return the color of the cast ray
      */
-    protected Color traceRay(Ray ray, int depth) {
+    protected ColorUnbounded traceRay(Ray ray, int depth) {
         if(depth <= 0) {
-            return Color.BLACK;
+            return ColorUnbounded.BLACK;
         }
 
         IntersectionInformation intersectionInformation = getRayIntersectionInfo(ray);
@@ -159,11 +159,12 @@ public class RaytracerSceneRenderer extends SceneRenderer {
         if(intersectionInformation.collision) {
             if(intersectionInformation.material.scatter(intersectionInformation, ray)) {
                 Ray scatteredRay = intersectionInformation.material.scatteredRay(intersectionInformation, ray);
-                Color attenuation = intersectionInformation.material.attenuation(intersectionInformation, ray);
+                ColorUnbounded attenuation = intersectionInformation.material.attenuation(intersectionInformation, ray);
 
                 return traceRay(scatteredRay, depth - 1).product(attenuation);
             }
             
+
             return intersectionInformation.material.emitted(intersectionInformation, ray);
         } 
         

@@ -22,7 +22,7 @@ public abstract class Material {
      * @param incidentRay The incident ray for the intersection
      * @return The attenuation of the material at a given intersection
      */
-    public abstract Color attenuation(IntersectionInformation intersectionInformation, Ray incidentRay);
+    public abstract ColorUnbounded attenuation(IntersectionInformation intersectionInformation, Ray incidentRay);
 
     /**
      * Returns the scattered ray of the material at a given intersection.
@@ -36,7 +36,7 @@ public abstract class Material {
     /**
      * 
      */
-    public Color emitted(IntersectionInformation intersectionInformation, Ray incidentRay) {
-        return Color.BLACK;
+    public ColorUnbounded emitted(IntersectionInformation intersectionInformation, Ray incidentRay) {
+        return ColorUnbounded.BLACK;
     }
 }
