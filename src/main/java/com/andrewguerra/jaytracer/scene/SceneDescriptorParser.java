@@ -22,6 +22,7 @@ import com.andrewguerra.jaytracer.render.DiffuseMaterial;
 import com.andrewguerra.jaytracer.render.ImageTexture;
 import com.andrewguerra.jaytracer.render.LightMaterial;
 import com.andrewguerra.jaytracer.render.Material;
+import com.andrewguerra.jaytracer.render.NormalMap;
 import com.andrewguerra.jaytracer.render.Quad;
 import com.andrewguerra.jaytracer.render.ReflectiveMaterial;
 import com.andrewguerra.jaytracer.render.Scene;
@@ -76,30 +77,56 @@ public class SceneDescriptorParser {
         String type = obj.getString("type");
         Vector3 position = parseVector3(obj.optString("position", "0, 0, 0"));
         Material material = parseMaterial(obj.getJSONObject("material"));
-
+        SceneEntity entity = null;
+        
         if(type.equals("sphere")) {
             double radius = obj.getDouble("radius");
 
-            return new Sphere(position, material, radius);
+            entity = new Sphere(position, material, radius);
         } else if(type.equals("cylinder")) {
             double radius = obj.getDouble("radius");
             double height = obj.getDouble("height");
             Vector3 axis = parseVector3(obj.getString("axis")).normalize();
 
-            return new Cylinder(position, material, axis, radius, height);
+            entity = new Cylinder(position, material, axis, radius, height);
         } else if(type.equals("quad")) {
             Vector3 u = parseVector3(obj.getString("u"));
             Vector3 v = parseVector3(obj.getString("v"));
 
-            return new Quad(position, material, u, v);
+            entity = new Quad(position, material, u, v);
         } else if(type.equals("box")) {
             Vector3 point1 = parseVector3(obj.getString("point1"));
             Vector3 point2 = parseVector3(obj.getString("point2"));
 
-            return new Box(point1, point2, material);
+            entity = new Box(point1, point2, material);
         }
 
-        return null;
+        JSONObject properties = obj.optJSONObject("properties", null);
+
+        if(properties != null) {
+            entity = parseProperties(properties, entity);
+        }
+
+        return entity;
+    }
+
+    private static SceneEntity parseProperties(JSONObject obj, SceneEntity entity) {
+        String normalMapPath = obj.optString("normalMap", "");
+        SceneEntity modifiedEntity = entity;
+
+        if(!normalMapPath.equals("")) {
+            try {
+                Image image = new Image(normalMapPath);
+                ImageTexture imageTexture = new ImageTexture(image);
+
+                modifiedEntity = new NormalMap(modifiedEntity, imageTexture);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        return modifiedEntity;
     }
 
     private static Vector3 parseVector3(String vector) {
